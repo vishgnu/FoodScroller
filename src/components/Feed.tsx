@@ -12,7 +12,7 @@
  * post that is 100vh tall does not snap to the screen.
  */
 
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, type FocusEvent } from 'react';
 import { RENDER_RADIUS, useFeed } from '../feed/useFeed';
 import { PostCard } from './PostCard';
 
@@ -20,6 +20,28 @@ export function Feed() {
   const feed = useFeed();
   const container = useRef<HTMLDivElement>(null);
   const frame = useRef(0);
+
+  /**
+   * Whether the keyboard was last in a post's action rail. Windowing unmounts
+   * the post the focus was on, which drops focus to `<body>` and loses the
+   * player's place; when that happens, focus is put back on the control of
+   * the post they are actually looking at. Only the active post's control is
+   * in the tab order, so there is exactly one candidate.
+   */
+  const railHadFocus = useRef(false);
+
+  const onFocus = useCallback((event: FocusEvent<HTMLDivElement>) => {
+    railHadFocus.current = event.target.classList.contains('rail__like');
+  }, []);
+
+  useEffect(() => {
+    if (!railHadFocus.current) return;
+    if (document.activeElement !== document.body) return;
+    // `preventScroll` — restoring focus must never move the feed.
+    container.current
+      ?.querySelector<HTMLElement>('.rail__like[tabindex="0"]')
+      ?.focus({ preventScroll: true });
+  }, [feed.active]);
 
   const measure = useCallback(() => {
     const element = container.current;
@@ -73,6 +95,7 @@ export function Feed() {
       className="feed"
       ref={container}
       onScroll={onScroll}
+      onFocus={onFocus}
       tabIndex={0}
       role="feed"
       aria-label="Food posts"

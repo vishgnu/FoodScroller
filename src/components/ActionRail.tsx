@@ -36,10 +36,18 @@ const DERIVED: Record<'comment' | 'save' | 'share', number> = {
 export interface ActionRailProps {
   post: Post;
   engaged: boolean;
+  /**
+   * Only the post filling the viewport puts its controls in the tab order.
+   * Every other post's like button is `tabindex="-1"`, because the feed is
+   * infinite: if each post's button were tabbable, Tab would walk forward
+   * into a sequence with no end, scrolling the feed as it went, and would
+   * never reach the navigation. That is a keyboard trap (WCAG 2.1.2).
+   */
+  active: boolean;
   onToggle: () => void;
 }
 
-export function ActionRail({ post, engaged, onToggle }: ActionRailProps) {
+export function ActionRail({ post, engaged, active, onToggle }: ActionRailProps) {
   const [popping, setPopping] = useState(false);
   const wasEngaged = useRef(engaged);
 
@@ -82,6 +90,7 @@ export function ActionRail({ post, engaged, onToggle }: ActionRailProps) {
           .join(' ')}
         aria-pressed={engaged}
         aria-label={engaged ? 'Remove your like' : 'Like this post'}
+        tabIndex={active ? 0 : -1}
         onClick={onToggle}
       >
         <span className="rail__like-glyph">

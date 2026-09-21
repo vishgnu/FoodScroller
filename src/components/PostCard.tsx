@@ -96,7 +96,7 @@ export function PostCard({ post, index, engaged, active, onToggle }: PostCardPro
       <div className="scrim" />
 
       <PostMeta post={post} />
-      <ActionRail post={post} engaged={engaged} onToggle={onToggle} />
+      <ActionRail post={post} engaged={engaged} active={active} onToggle={onToggle} />
     </article>
   );
 }
