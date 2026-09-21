@@ -40,13 +40,19 @@ export const RESPONSE_MIN = 2;
 const ON_AFFINITY_P = 0.6;
 
 /**
- * On-affinity budget inside the trailing FLOOR_WINDOW. A free choice stops
- * at FREE_ON_CAP so that two on-affinity slots are always held in reserve for
- * a response obligation; an obligation may spend up to OBLIGATION_ON_CAP.
- * Both leave at least FLOOR_MIN_OFF off-affinity posts in the window.
+ * On-affinity budget inside the trailing FLOOR_WINDOW. A free choice stops at
+ * FREE_ON_CAP so that on-affinity slots are always held in reserve for a
+ * response obligation; an obligation may spend up to OBLIGATION_ON_CAP. Both
+ * leave at least FLOOR_MIN_OFF off-affinity posts in the window, which is how
+ * invariant 1 is a guarantee rather than a tendency.
+ *
+ * Pool depth note: OBLIGATION_ON_CAP + 1 is the most on-affinity posts that
+ * can appear in any 20, so every tag needs at least that many templates in
+ * the corpus or invariant 2 has to start relaxing its window. The corpus
+ * carries 12 per tag for exactly this reason.
  */
-const FREE_ON_CAP = FLOOR_WINDOW - FLOOR_MIN_OFF - 3; // 9
-const OBLIGATION_ON_CAP = FLOOR_WINDOW - FLOOR_MIN_OFF - 1; // 11
+const FREE_ON_CAP = FLOOR_WINDOW - FLOOR_MIN_OFF - 5; // 7
+const OBLIGATION_ON_CAP = FLOOR_WINDOW - FLOOR_MIN_OFF; // 12
 
 /** How far the artId freshness window will relax before giving up on it. */
 const ART_WINDOW_RELAXATION: readonly number[] = [ART_REPEAT_WINDOW, 12, 6, 0];
@@ -61,6 +67,8 @@ export interface Served {
   post: Post;
   offAffinity: boolean;
   affinity: readonly Tag[];
+  /** The engaged set as it stood when this post was served. */
+  engaged: ReadonlySet<string>;
 }
 
 export interface NextPostOptions {
@@ -100,8 +108,16 @@ export function isOffAffinity(
   return !tags.some((tag) => affinity.includes(tag));
 }
 
-function sameAffinity(a: readonly Tag[], b: readonly Tag[]): boolean {
-  return a.length === b.length && a.every((tag, i) => tag === b[i]);
+/**
+ * An engagement still waiting to be answered: `tags` are the engaged post's
+ * own tags, `needed` is how many more matching posts it wants, and
+ * `slotsLeft` counts the serves still inside its five-post window, this one
+ * included. `slotsLeft - needed` is its slack; at zero it must be answered now.
+ */
+interface Obligation {
+  tags: readonly Tag[];
+  needed: number;
+  slotsLeft: number;
 }
 
 function countOnAffinity(history: readonly Served[]): number {
@@ -122,39 +138,100 @@ function recentArtIds(history: readonly Served[], window: number): ReadonlySet<s
   return ids;
 }
 
-/**
- * How many posts have been served since the affinity window last changed —
- * i.e. since the most recent engagement — and how many of them answered it.
- */
-function responseProgress(
-  history: readonly Served[],
-  affinity: readonly Tag[],
-  target: Tag,
-): { since: number; matched: number } {
-  let since = 0;
-  let matched = 0;
+function postById(history: readonly Served[], id: string): Post | undefined {
   for (let i = history.length - 1; i >= 0; i -= 1) {
     const entry = history[i];
-    if (!entry || !sameAffinity(entry.affinity, affinity)) break;
-    since += 1;
-    if (entry.post.tags.includes(target)) matched += 1;
+    if (entry?.post.id === id) return entry.post;
   }
-  return { since, matched };
+  return undefined;
 }
 
+/**
+ * Reconstruct every engagement still inside its response window, purely from
+ * the serve-time snapshots in the history. A tap is visible as an id that was
+ * not in the engaged set at the previous serve and is at the next one — which
+ * is exact even when the player scrolled back to tap an older post, and even
+ * when the affinity window happens to come out unchanged.
+ *
+ * Nothing extra is stored to make this work: the obligation is *derived*, not
+ * recorded, so the state vocabulary in docs/progression-spec.md stays
+ * exhaustive.
+ *
+ * Engagements overlap — a player tapping often has several windows open at
+ * once — and a post carrying two tags can answer two of them.
+ */
+function outstandingObligations(
+  history: readonly Served[],
+  state: SessionState,
+): Obligation[] {
+  const now = history.length;
+  const obligations: Obligation[] = [];
+
+  for (let b = Math.max(0, now - RESPONSE_WINDOW + 1); b <= now; b += 1) {
+    const at = b === now ? state.engaged : history[b]?.engaged;
+    if (!at) continue;
+    const before = b === 0 ? undefined : history[b - 1]?.engaged;
+
+    for (const id of at) {
+      if (before?.has(id) === true) continue;
+      if (b === 0 && before === undefined) break; // nothing was served yet
+      const post = postById(history, id);
+      if (!post) continue;
+
+      let matched = 0;
+      for (let i = b; i < now; i += 1) {
+        const entry = history[i];
+        if (entry?.post.tags.some((tag) => post.tags.includes(tag)) === true) matched += 1;
+      }
+
+      const needed = RESPONSE_MIN - matched;
+      const slotsLeft = b + RESPONSE_WINDOW - now;
+      if (needed > 0 && slotsLeft > 0) {
+        obligations.push({ tags: post.tags, needed, slotsLeft });
+      }
+    }
+  }
+
+  return obligations;
+}
+
+/** How much a template would do for the outstanding obligations. */
+function obligationScore(
+  template: PostTemplate,
+  obligations: readonly Obligation[],
+): number {
+  let score = 0;
+  for (const obligation of obligations) {
+    if (!template.tags.some((tag) => obligation.tags.includes(tag))) continue;
+    const slack = obligation.slotsLeft - obligation.needed;
+    score += slack <= 0 ? 100 : Math.max(1, 10 - slack);
+  }
+  return score;
+}
+
+/**
+ * Pick from `pool`, artId freshness first and score second: the freshest
+ * window that has any candidate at all is the one that gets to choose, so
+ * invariant 2 only ever gives ground after everything else has.
+ */
 function choose(
   pool: readonly PostTemplate[],
   history: readonly Served[],
   seed: number,
   index: number,
+  score: (template: PostTemplate) => number = () => 0,
 ): PostTemplate | undefined {
   for (const window of ART_WINDOW_RELAXATION) {
     const blocked = recentArtIds(history, window);
     const fresh = pool.filter((template) => !blocked.has(template.artId));
-    if (fresh.length > 0) {
-      const pickIndex = Math.floor(rand(seed, index, window + 7) * fresh.length);
-      return fresh[Math.min(pickIndex, fresh.length - 1)];
-    }
+    if (fresh.length === 0) continue;
+
+    let best = -Infinity;
+    for (const template of fresh) best = Math.max(best, score(template));
+    const top = fresh.filter((template) => score(template) === best);
+
+    const pickIndex = Math.floor(rand(seed, index, window + 7) * top.length);
+    return top[Math.min(pickIndex, top.length - 1)];
   }
   return undefined;
 }
@@ -189,55 +266,55 @@ export function serveNext(
   const affinity = state.affinity;
 
   const onInWindow = countOnAffinity(history);
-  const target = affinity.length > 0 ? affinity[affinity.length - 1] : undefined;
+  const obligations = outstandingObligations(history, state);
 
-  // Invariant 3: is there an unanswered engagement, and how urgent is it?
-  let obligation = false;
-  if (target !== undefined) {
-    const { since, matched } = responseProgress(history, affinity, target);
-    obligation = since < RESPONSE_WINDOW && matched < RESPONSE_MIN;
+  // Invariant 1 decides what is even allowed; invariant 3 decides what is
+  // wanted inside that. An obligation can often be answered by an
+  // off-affinity post — the engaged post's second tag need not be in the
+  // affinity window — so the two pull against each other far less than they
+  // look like they should.
+  // The tighter the deadline, the more of the on-affinity budget the
+  // obligation may spend. Holding the last slots back for urgent responses is
+  // what stops a relaxed one from eating the budget a critical one will need.
+  let cap = FREE_ON_CAP;
+  if (obligations.length > 0) {
+    let minSlack = Infinity;
+    for (const o of obligations) minSlack = Math.min(minSlack, o.slotsLeft - o.needed);
+    cap = OBLIGATION_ON_CAP - Math.max(0, Math.min(3, minSlack));
   }
-
-  // Invariant 1: the floor decides what is even allowed.
-  const cap = obligation ? OBLIGATION_ON_CAP : FREE_ON_CAP;
   const onAllowed = affinity.length > 0 && onInWindow < cap;
 
-  const wantOn =
-    onAllowed && (obligation || rand(seed, index, 1) < ON_AFFINITY_P);
+  const offPool = CORPUS.filter((t) => isOffAffinity(t.tags, affinity));
+  const onPool = CORPUS.filter((t) => !isOffAffinity(t.tags, affinity));
 
   let template: PostTemplate | undefined;
 
-  if (wantOn && target !== undefined) {
-    // Answer the engagement with its own tag first, then any affinity tag.
-    template =
-      choose(
-        CORPUS.filter((t) => t.tags.includes(target)),
-        history,
-        seed,
-        index,
-      ) ??
-      choose(
-        CORPUS.filter((t) => !isOffAffinity(t.tags, affinity)),
-        history,
-        seed,
-        index,
-      );
-  }
-
-  if (!template) {
+  if (obligations.length > 0) {
+    // Answer the taps first, from whichever half of the corpus the floor
+    // still allows.
+    // Among templates that answer the same obligations, take the one that
+    // does NOT spend on-affinity budget: an engaged post's second tag often
+    // lives outside the affinity window, so the response and the floor can
+    // both be paid out of the same post.
     template = choose(
-      CORPUS.filter((t) => isOffAffinity(t.tags, affinity)),
+      onAllowed ? CORPUS : offPool,
       history,
       seed,
       index,
+      (t) =>
+        obligationScore(t, obligations) * 4 +
+        (isOffAffinity(t.tags, affinity) ? 1 : 0),
     );
+  } else if (onAllowed && rand(seed, index, 1) < ON_AFFINITY_P) {
+    template = choose(onPool, history, seed, index);
   }
+
+  template ??= choose(offPool, history, seed, index);
 
   // Last resort: the corpus is sized so this is unreachable, but a feed that
   // stalls is worse than a feed that repeats. FR-001 has no escape hatch.
   template ??= choose(CORPUS, history, seed, index) ?? CORPUS[0];
 
-  /* c8 ignore next */
   if (!template) throw new Error('corpus is empty');
 
   const post = toPost(template, index);
@@ -245,6 +322,7 @@ export function serveNext(
     post,
     offAffinity: isOffAffinity(post.tags, affinity),
     affinity: [...affinity],
+    engaged: state.engaged,
   };
 }
 
