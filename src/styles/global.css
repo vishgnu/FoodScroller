@@ -3,6 +3,12 @@
 /*
  * Global layout and component styles. No colour literals here — tokens only.
  * Heights are dvh, never vh: mobile browser chrome makes vh wrong.
+ *
+ * Every type size is `rem`, never `px`, and `html` never sets a font-size:
+ * that is what makes a device's enlarged-text preference actually enlarge
+ * the text (FR-015). 1rem is the root size the player asked for — 16px if
+ * they asked for nothing. Page zoom is unaffected; it scales rem and px
+ * alike.
  */
 
 *,
@@ -23,7 +29,7 @@ body {
   background: var(--void);
   color: var(--ink);
   font-family: var(--font-ui);
-  font-size: 15px;
+  font-size: 0.9375rem; /* 15px at a 16px root */
   line-height: 1.35;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
@@ -77,7 +83,7 @@ button {
   position: relative;
   color: var(--muted);
   font-weight: 700;
-  font-size: 16px;
+  font-size: 1rem;
   letter-spacing: 0.01em;
   padding: 4px 2px;
 }
@@ -148,7 +154,7 @@ button {
   display: grid;
   place-items: center;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   text-align: center;
   padding: 0 32px;
 }
@@ -229,12 +235,29 @@ button {
 .meta {
   position: absolute;
   left: var(--safe);
-  right: 88px;
+  right: calc(var(--safe) + 4.5rem); /* clears the rail, and grows with it */
   bottom: calc(var(--nav-h) + var(--safe) + env(safe-area-inset-bottom));
   z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  /*
+   * The stack is bottom-anchored and grows upward, so at enlarged text it
+   * would run off the top of the post and under the tabs. Cap it at the
+   * space between the tabs and the nav; the caption is the only item
+   * allowed to shrink, so the handle, tags and sound line always survive.
+   */
+  max-height: calc(100dvh - var(--nav-h) - 52px - 2 * var(--safe));
+}
+
+.meta > * {
+  flex: 0 0 auto;
+}
+
+.meta > .meta__caption {
+  flex: 0 1 auto;
+  min-height: 0;
 }
 
 .meta__handle {
@@ -242,8 +265,13 @@ button {
   align-items: center;
   gap: 6px;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 1rem;
   color: var(--ink);
+
+  /* A handle has no spaces to break at, so at doubled text it would run out
+   * of the stack and under the rail. Let it break anywhere instead. */
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .meta__tick {
@@ -257,7 +285,7 @@ button {
   background: var(--zest-16);
   color: var(--zest);
   font-weight: 700;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 3px 7px;
@@ -265,17 +293,30 @@ button {
 
 .meta__caption {
   font-weight: 400;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--ink);
   margin: 0;
   max-width: 34ch;
   text-wrap: pretty;
+
+  /*
+   * The stack is bottom-anchored and grows upward, so at doubled text it
+   * would otherwise run off the top of the post and under the tabs. The
+   * caption is the one elastic item in it: clamping it is what keeps the
+   * handle, the tags and the sound line on screen.
+   */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .meta__tags {
   color: var(--muted);
   font-weight: 700;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 .meta__sound {
@@ -283,7 +324,7 @@ button {
   align-items: center;
   gap: 7px;
   color: var(--ink);
-  font-size: 13px;
+  font-size: 0.8125rem;
   min-width: 0;
 }
 
@@ -343,7 +384,7 @@ button {
   color: var(--ink);
   display: grid;
   place-items: center;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   line-height: 1;
 }
@@ -358,7 +399,7 @@ button {
 
 .rail__count {
   font-weight: 700;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
@@ -453,7 +494,7 @@ button {
   flex: 1 1 0;
   height: 100%;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
