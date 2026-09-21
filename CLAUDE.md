@@ -1,8 +1,9 @@
 # CLAUDE.md
 
 Orientation for Claude Code sessions working in this repo. See `README.md`
-for what [project name] is and [`PLAN.md` / your scope doc] for the current
-scope baseline. Project principles live in [`constitution.md` — path].
+for what FoodScroller is and `specs/<n>-<name>/spec.md` (Spec Kit) for the
+current scope baseline. Project principles live in
+`.specify/memory/constitution.md` — the project's single constitution.
 
 ## Lanes
 
@@ -14,8 +15,9 @@ scope baseline. Project principles live in [`constitution.md` — path].
   `.claude/agents/<name>.md` with the same name as the plugin lane — the
   project-local file overrides the plugin's version of that lane. That is
   the supported way to adapt one lane; do not fork the kit for it.
-- Lanes this project has overridden or added locally: [list them, or "none
-  yet"].
+- Lanes this project has overridden or added locally: none yet. Lanes in
+  play for the current milestone: `pm`, `engineer`, `graphics`,
+  `art-director`, `tester`.
 
 ## Agent Orchestration
 
@@ -54,11 +56,13 @@ scope baseline. Project principles live in [`constitution.md` — path].
   cross-reference specific rule numbers. A wholesale rewrite silently drops
   rules and breaks those cross-references; this has actually happened, which
   is why the rule is here.
-- Application code is [language/toolchain] under [type-checking / strictness
-  settings] — [project-specific code rules], and run [`lint command`] before
-  considering a change done.
+- Application code is TypeScript with Phaser 3, bundled by Vite —
+  [tsconfig strictness, project-specific code rules, and the `lint command`
+  to run before a change counts as done: `engineer` fills these in when the
+  toolchain lands].
 - Source paths by area: [engine/app code path], [content/data path],
-  [asset paths], [test path].
+  [asset paths], [test path] — `engineer` fills these in with the toolchain;
+  no lane should write files until they are named.
 
 ## Commits
 
@@ -67,4 +71,5 @@ scope baseline. Project principles live in [`constitution.md` — path].
   changes into one commit.
 - Reference the related GitHub issue in the commit body when there is
   one, so the tracker and the history stay linked.
-- [Any required commit trailers for this project.]
+- Every commit carries a `Co-Authored-By:` trailer naming the agent that
+  produced it.
