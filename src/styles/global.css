@@ -519,6 +519,71 @@ button {
   color: var(--muted);
 }
 
+/*
+ * Short viewports — the rail clamp.
+ *
+ * The rail is bottom-anchored above the nav and grows upward, so on a
+ * landscape phone the untreated stack (373px) runs off the top of the post
+ * and takes the heart with it: below roughly 340px of height the only
+ * interactive control in the game was off screen entirely (FR-006).
+ *
+ * The clamp is spacing first, then size, then items — in that order. The
+ * order of sacrifice is disc, share, save, comment, avatar. The heart is
+ * never dropped at any viewport.
+ */
+
+@media (max-height: 600px) {
+  .rail {
+    --rail-gap: 14px;
+  }
+
+  .rail__disc {
+    display: none;
+  }
+
+  .meta__caption {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+}
+
+@media (max-height: 460px) {
+  .rail {
+    --rail-gap: 10px;
+  }
+
+  .rail__avatar {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 2px;
+  }
+
+  .rail__action--share {
+    display: none;
+  }
+}
+
+@media (max-height: 400px) {
+  .rail__action--save {
+    display: none;
+  }
+
+  .meta__caption {
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+
+  .meta__tags {
+    display: none;
+  }
+}
+
+@media (max-height: 340px) {
+  .rail__action--comment {
+    display: none;
+  }
+}
+
 /* --------------------------------------------------------- reduced motion */
 
 @media (prefers-reduced-motion: reduce) {

@@ -100,7 +100,11 @@ export function ActionRail({ post, engaged, active, onToggle }: ActionRailProps)
       </button>
 
       {(['comment', 'save', 'share'] as const).map((name) => (
-        <span key={name} className="rail__action rail__action--inert" aria-hidden="true">
+        <span
+          key={name}
+          className={`rail__action rail__action--inert rail__action--${name}`}
+          aria-hidden="true"
+        >
           <Icon name={name satisfies IconName} />
           <span className="rail__count">{count(Math.round(post.baseLikes / DERIVED[name]))}</span>
         </span>
