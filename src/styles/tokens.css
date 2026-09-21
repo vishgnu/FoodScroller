@@ -1,0 +1,50 @@
+/*
+ * Design tokens — art-style-guide.md v1 "Doomfeed".
+ *
+ * THIS IS THE ONLY FILE IN THE REPOSITORY WHERE A COLOUR LITERAL MAY APPEAR.
+ * Every component and every asset references var(--…). A raw hex anywhere
+ * else is a review failure (plan.md, "File layout"; art guide anchor 1).
+ *
+ * Hard budget: 8 colours and 1 gradient. Extending the palette is an
+ * amendment to docs/art-style-guide.md, not a change to this file alone.
+ */
+
+:root {
+  /* --- the eight --- */
+  --void: #0b0b0f; /* feed background, behind everything */
+  --surface: #16161c; /* cards, sheets, bars */
+  --ink: #f5f5f7; /* primary text and icons on dark */
+  --muted: #9a9aa8; /* secondary text, inactive icons, counts at rest */
+  --pulse: #ff2d6f; /* the engagement action. RESERVED — nothing else */
+  --zest: #ffc53d; /* food warmth, "sponsored", anything selling you something */
+  --mint: #2bd9a6; /* verification ticks, confirmations, "safe" signals */
+  --grape: #7c4dff; /* second half of the gradient; sparingly on its own */
+
+  /* --- the one gradient --- */
+  --ring: linear-gradient(135deg, var(--pulse), var(--grape));
+
+  /* --- derived alphas: same eight hues, no new colours --- */
+  --void-0: rgb(11 11 15 / 0%);
+  --void-40: rgb(11 11 15 / 40%);
+  --void-70: rgb(11 11 15 / 70%);
+  --ink-08: rgb(245 245 247 / 8%);
+  --ink-16: rgb(245 245 247 / 16%);
+  --ink-40: rgb(245 245 247 / 40%);
+  --pulse-24: rgb(255 45 111 / 24%);
+  --zest-16: rgb(255 197 61 / 16%);
+
+  /* --- corner radii: 8 (chips), 16 (cards), 24 (sheets). No other values. --- */
+  --r-chip: 8px;
+  --r-card: 16px;
+  --r-sheet: 24px;
+
+  /* --- layout --- */
+  --safe: 16px; /* UI keeps 16px from the viewport edge */
+  --nav-h: 56px; /* bottom tab bar height */
+  --rail-gap: 22px; /* action rail spacing */
+
+  /* --- typography: the system UI stack, never a display face --- */
+  --font-ui:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+}
