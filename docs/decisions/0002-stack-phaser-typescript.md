@@ -1,7 +1,7 @@
 # 0002: Stack is Phaser 3 + TypeScript on Vite
 
 Date: 2026-09-21
-Status: decided
+Status: **superseded by [0005](0005-stack-react-typescript.md)** — reversed 2026-09-21, before any code was written against it
 Kind: product
 Issue: —
 
@@ -32,3 +32,10 @@ half-DOM hybrid.
 
 Pinned versions and tsconfig strictness remain open — `engineer` records
 them in the constitution when the toolchain lands.
+
+## Superseded
+
+Reversed the same day, before a line of code existed against it. The
+trade-off stated in Consequence above turned out to be the deciding factor
+rather than an accepted cost — see 0005. Left in place rather than edited:
+a decision log that rewrites its own reversals is a design document.

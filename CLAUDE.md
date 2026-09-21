@@ -56,10 +56,10 @@ current scope baseline. Project principles live in
   cross-reference specific rule numbers. A wholesale rewrite silently drops
   rules and breaks those cross-references; this has actually happened, which
   is why the rule is here.
-- Application code is TypeScript with Phaser 3, bundled by Vite —
-  [tsconfig strictness, project-specific code rules, and the `lint command`
-  to run before a change counts as done: `engineer` fills these in when the
-  toolchain lands].
+- Application code is TypeScript with React, bundled by Vite — no game
+  engine; the feed is DOM. [tsconfig strictness, project-specific code
+  rules, and the `lint command` to run before a change counts as done:
+  `engineer` fills these in when the toolchain lands].
 - Source paths by area: [engine/app code path], [content/data path],
   [asset paths], [test path] — `engineer` fills these in with the toolchain;
   no lane should write files until they are named.

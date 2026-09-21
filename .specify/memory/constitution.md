@@ -91,9 +91,11 @@ lanes, interaction states, timing.
 
 ## Technical Constraints
 
-- **Stack**: TypeScript with Phaser 3, bundled by Vite. No backend at this
-  stage. [Pinned major versions and the tsconfig strictness setting —
-  `engineer` fills these in when the toolchain lands.]
+- **Stack**: TypeScript with React, bundled by Vite. No game engine and no
+  backend at this stage. The feed is DOM, not canvas — native scrolling,
+  text layout and accessibility are requirements here, not conveniences.
+  [Pinned major versions and the tsconfig strictness setting — `engineer`
+  fills these in when the toolchain lands.]
 - **Art tooling**: [which generation or authoring tools exist in this
   environment, and which do not]. This is a hard constraint, not a stylistic
   preference — code or plans that assume an unavailable tool are broken by
