@@ -79,13 +79,18 @@ export interface PostCardProps {
 
 export function PostCard({ post, index, engaged, active, onToggle }: PostCardProps) {
   const entry = artFor(post.artId);
+  const handleId = `post-${post.id}-handle`;
 
   return (
     <article
       className="post"
       style={{ top: `calc(${index.toString()} * 100dvh)` }}
-      aria-label={`Post by ${post.handle}`}
+      aria-labelledby={handleId}
       aria-posinset={index + 1}
+      // `aria-posinset` and `aria-setsize` are required as a pair, and -1 is
+      // the value for a feed whose length is not known — which this one's
+      // never is (FR-001).
+      aria-setsize={-1}
     >
       <div className={`media${active ? ' media--drift' : ''}`}>
         <div className="media__art">
@@ -95,7 +100,7 @@ export function PostCard({ post, index, engaged, active, onToggle }: PostCardPro
 
       <div className="scrim" />
 
-      <PostMeta post={post} />
+      <PostMeta post={post} handleId={handleId} />
       <ActionRail post={post} engaged={engaged} active={active} onToggle={onToggle} />
     </article>
   );

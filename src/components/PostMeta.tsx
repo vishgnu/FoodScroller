@@ -10,14 +10,21 @@
 import type { Post } from '../feed/types';
 import { Icon } from './Icon';
 
-export function PostMeta({ post }: { post: Post }) {
+export interface PostMetaProps {
+  post: Post;
+  /** The article names itself from the handle, so `role="feed"` navigation
+   * announces which post it landed on. */
+  handleId: string;
+}
+
+export function PostMeta({ post, handleId }: PostMetaProps) {
   return (
     <div className="meta">
       {post.sponsored && <span className="meta__sponsored">Sponsored</span>}
 
-      <span className="meta__handle">
+      <span className="meta__handle" id={handleId}>
         {post.handle}
-        <span className="meta__tick" aria-label="Verified">
+        <span className="meta__tick" role="img" aria-label="Verified">
           <Icon name="tick" size={14} />
         </span>
       </span>
