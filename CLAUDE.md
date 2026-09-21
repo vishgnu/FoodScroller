@@ -57,12 +57,24 @@ current scope baseline. Project principles live in
   rules and breaks those cross-references; this has actually happened, which
   is why the rule is here.
 - Application code is TypeScript with React, bundled by Vite — no game
-  engine; the feed is DOM. [tsconfig strictness, project-specific code
-  rules, and the `lint command` to run before a change counts as done:
-  `engineer` fills these in when the toolchain lands].
-- Source paths by area: [engine/app code path], [content/data path],
-  [asset paths], [test path] — `engineer` fills these in with the toolchain;
-  no lane should write files until they are named.
+  engine; the feed is DOM. `tsconfig.json` is `strict` plus
+  `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`,
+  `noImplicitOverride`, `noImplicitReturns`, `noUnusedLocals`,
+  `noUnusedParameters` and `verbatimModuleSyntax`. Runtime dependencies are
+  `react` and `react-dom` and nothing else — no router, no state library, no
+  CSS framework, no UI kit, no animation library.
+- Run `npm run check` (eslint with zero warnings allowed, then
+  `tsc --noEmit`), `npm run build` and `npm test` before a change counts as
+  done, and verify the running game in a browser as well (Principle V).
+- Two project-specific rules the linter cannot fully catch:
+  colour literals appear in `src/styles/tokens.css` and nowhere else —
+  everything else uses `var(--token)`; and nothing is ever written to
+  `localStorage`, `sessionStorage`, IndexedDB, cookies or the network.
+- Source paths by area: app and engine code `src/` (entry `src/main.tsx`);
+  content and data `src/feed/` (`types.ts` is the schema, `corpus.ts` is the
+  post copy); assets `src/assets/` (`index.ts` is the art registry,
+  `posts/` and `avatars/` the illustrations); tests `tests/`.
+  Styles are `src/styles/`, components `src/components/`.
 
 ## Commits
 

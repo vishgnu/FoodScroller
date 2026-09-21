@@ -108,13 +108,17 @@ export function useFeed(): FeedView {
       setState((previous) => {
         const session = toggleEngagement(previous.session, post);
 
-        // Everything past the post being acted on is discarded and served
-        // again under the new affinity. Without this the answer to a tap
-        // would arrive only after the already-generated lookahead had gone
-        // by, which is well past the five posts SC-004 allows. Posts the
-        // player has already passed are untouched — FR-012 covers what was
-        // seen, not what was queued.
-        const keep = Math.max(0, previous.active - previous.released + 1);
+        // The queued posts the player has not reached yet are discarded and
+        // served again under the new affinity. Without this the answer to a
+        // tap would arrive only after the existing lookahead had gone by,
+        // which is well past the five posts SC-004 allows.
+        //
+        // The cut is at the furthest post the player has actually reached,
+        // not at the one they tapped: FR-012 says a post that has been seen
+        // is the same post when scrolled back to, and that outranks
+        // answering a tap made on a post they had already scrolled past.
+        const frontier = Math.max(previous.active, previous.session.seen - 1);
+        const keep = Math.max(0, frontier - previous.released + 1);
         const served = previous.served.slice(0, keep);
 
         return grow({ ...previous, session, served }, seed);

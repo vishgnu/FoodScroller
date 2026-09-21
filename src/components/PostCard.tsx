@@ -23,26 +23,47 @@ function hash(value: string): number {
 }
 
 /**
- * The neutral stand-in. Two flat layers and nothing else, drawn from palette
- * tokens only, and never `pulse` — that colour belongs to the engagement
- * action alone. Deliberately not trying to be art: the art lane's work is
- * what replaces it, one artId at a time.
+ * The neutral stand-in, for every artId `graphics` has not authored yet.
+ *
+ * Two flat layers and a small accent, drawn from palette tokens only and
+ * never `pulse` — that colour belongs to the engagement action alone. It is
+ * deliberately not trying to be art; the spec allows neutral stand-ins until
+ * the art direction lands, and the art lane's work is what replaces it, one
+ * artId at a time.
+ *
+ * It obeys the one rule a real illustration also has to obey: the right edge
+ * and the bottom-left third stay quiet, so `ink` and `pulse` hold contrast
+ * over them (art-style-guide.md, "Environments and backgrounds").
  */
+const STAND_IN_FIELDS = ['var(--surface)', 'var(--void)'] as const;
+const STAND_IN_SUBJECTS = [
+  'var(--zest)',
+  'var(--mint)',
+  'var(--grape)',
+  'var(--muted)',
+] as const;
+
 function StandIn({ artId }: { artId: string }) {
   const h = hash(artId);
-  const fields = ['var(--surface)', 'var(--void)'] as const;
-  const subjects = ['var(--zest)', 'var(--mint)', 'var(--grape)', 'var(--muted)'] as const;
-  const field = fields[h % fields.length];
-  const subject = subjects[(h >> 2) % subjects.length];
-  const shape = h % 3;
+  const field = STAND_IN_FIELDS[h % STAND_IN_FIELDS.length];
+  const subject = STAND_IN_SUBJECTS[(h >> 2) % STAND_IN_SUBJECTS.length];
+  const accent = STAND_IN_SUBJECTS[(h >> 5) % STAND_IN_SUBJECTS.length];
+  const shape = (h >> 8) % 4;
 
   return (
     <svg viewBox="0 0 1080 1920" preserveAspectRatio="xMidYMid slice" role="presentation">
       <rect width="1080" height="1920" fill={field} />
-      {shape === 0 && <circle cx="540" cy="820" r="360" fill={subject} />}
-      {shape === 1 && <rect x="180" y="540" width="720" height="620" rx="24" fill={subject} />}
-      {shape === 2 && <path d="M120 1180 540 460l420 720Z" fill={subject} />}
-      <rect x="180" y="1300" width="720" height="16" rx="8" fill={subject} opacity="0.5" />
+
+      {shape === 0 && <circle cx="450" cy="760" r="330" fill={subject} />}
+      {shape === 1 && <rect x="130" y="450" width="640" height="620" rx="24" fill={subject} />}
+      {shape === 2 && <path d="M120 1080 450 430l330 650Z" fill={subject} />}
+      {shape === 3 && (
+        <path d="M130 760a320 320 0 0 1 640 0v320H130Z" fill={subject} />
+      )}
+
+      <circle cx="700" cy="420" r="90" fill={accent} />
+      <rect x="130" y="1140" width="420" height="16" rx="8" fill={accent} />
+      <rect x="130" y="1196" width="250" height="16" rx="8" fill={subject} />
     </svg>
   );
 }
