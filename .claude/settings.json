@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "aigameskit": {
+      "source": {
+        "source": "github",
+        "repo": "vishgnu/AIGamesKit"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "gamedev-lanes@aigameskit": true
+  }
+}
