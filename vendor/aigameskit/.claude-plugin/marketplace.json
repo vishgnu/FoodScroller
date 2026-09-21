@@ -1,0 +1,28 @@
+{
+  "name": "aigameskit",
+  "owner": {
+    "name": "vishgnu"
+  },
+  "plugins": [
+    {
+      "name": "gamedev-lanes",
+      "source": "./plugins/gamedev-lanes",
+      "description": "Lane-scoped agent roster and orchestration rules for running a game project with AI agents: engineer, writer, graphics, art-director, sound, game-design, tester, devops, infrastructure, pm. Scaffolds a project's own documents \u2014 orientation doc, constitution, decision log, art, audio, voice and progression specs \u2014 and a reference cloud platform with free-tier hosting, player sign-in, storage and keyless CI/CD.",
+      "category": "workflow",
+      "keywords": [
+        "game-development",
+        "agents",
+        "orchestration",
+        "lanes",
+        "spec-driven",
+        "azure",
+        "hosting",
+        "ci-cd",
+        "infrastructure-as-code",
+        "templates",
+        "scaffolding",
+        "project-setup"
+      ]
+    }
+  ]
+}

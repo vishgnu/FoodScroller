@@ -1,0 +1,10 @@
+{
+  "name": "gamedev-lanes",
+  "version": "0.3.0",
+  "description": "A lane-scoped agent roster and the orchestration rules that make it work, extracted from a shipped AI-built adventure game. Each lane owns a declared file scope; the orchestrator plans and delegates but never executes. Ships the per-project documents each lane reads \u2014 orientation doc, constitution, decision log and spec guides \u2014 and a reference cloud platform with free-tier hosting, player sign-in, storage and keyless CI/CD, both of which scaffold into a project.",
+  "author": {
+    "name": "vishgnu"
+  },
+  "repository": "https://github.com/vishgnu/AIGamesKit",
+  "license": "MIT"
+}
