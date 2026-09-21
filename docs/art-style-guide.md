@@ -9,7 +9,7 @@ purpose: this doc is the swappable part.
 wins for anything about *how the art should look*; the agent definition
 wins for *where files live* and *what tooling is allowed*.
 
-Status: **current style** — arrived at from the user's direction ("a mix
+Status: **current style** (v1.0.1 — icon location corrected) — arrived at from the user's direction ("a mix
 of YouTube Shorts, TikTok and Insta, so addicted teens relate") read
 against Constitution Principle I. The canonical reference assets are the
 hero post illustration and the icon set in `src/assets/`.
@@ -163,8 +163,10 @@ Checkable properties, in review order:
 6. `pulse` usage — engagement only. A `pulse` fill anywhere else fails.
 7. No text inside any SVG.
 
-Canonical references: the hero post illustration and the action-rail icon
-set in `src/assets/`. New work is compared against those, never only
+Canonical references: the post illustrations in `src/assets/`. The
+action-rail icons live in `src/components/Icon.tsx`, not in `src/assets/`
+— they are interface, not art, and this document defers to the plan for
+where files live. New work is compared against those, never only
 against the most recently accepted asset.
 
 ## Known drift risks

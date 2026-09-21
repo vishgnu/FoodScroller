@@ -114,8 +114,11 @@ lanes, interaction states, timing.
 - **Stack**: TypeScript with React, bundled by Vite. No game engine and no
   backend at this stage. The feed is DOM, not canvas — native scrolling,
   text layout and accessibility are requirements here, not conveniences.
-  [Pinned major versions and the tsconfig strictness setting — `engineer`
-  fills these in when the toolchain lands.]
+  Pinned: React 18.3.1, react-dom 18.3.1, Vite 5.4.11, TypeScript 5.6.3.
+  TypeScript is `strict` plus `noUncheckedIndexedAccess`,
+  `exactOptionalPropertyTypes`, `noImplicitOverride`, `noImplicitReturns`,
+  `noUnusedLocals`, `noUnusedParameters` and `verbatimModuleSyntax`.
+  Runtime dependencies are `react` and `react-dom` and nothing else.
 - **Art tooling**: hand-authored **SVG only**, written as source in this
   repository. No image generation tooling, no raster editors, no binary
   image assets. This is a hard constraint, not a stylistic preference —
@@ -169,4 +172,4 @@ Development Workflow section above. Compliance is reviewed the same way any
 lane's output is reviewed — against this document and the repo's existing
 conventions, not reviewer preference.
 
-**Version**: 1.0.0 | **Ratified**: 2026-09-21 | **Last Amended**: 2026-09-21
+**Version**: 1.0.1 | **Ratified**: 2026-09-21 | **Last Amended**: 2026-09-21

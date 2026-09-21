@@ -66,6 +66,20 @@ hold, and both are testable:
 2. **No post repeats within 20 posts.** Recurrence is the joke; visible
    repetition is a bug.
 
+**Precedence, found the hard way in phase 1.** Invariant 1 and the
+five-post response guarantee below are not jointly satisfiable at every
+engagement rate: a single-tagged engaged post can only be answered by an
+on-affinity post, invariant 1 caps on-affinity at 12 of any 20, and each
+tap wants 2 of them. Above roughly one tap every five posts they compete
+for the same slots.
+
+**Invariant 1 wins, absolutely.** The floor is never breached. Above that
+engagement rate the response guarantee degrades to a strong tendency —
+measured at over 90% of taps answered even when every single post is
+tapped. This is the right way round: a feed that collapses to one topic
+has stopped being a feed, whereas a tap that goes unanswered one time in
+ten is indistinguishable from the real thing it satirises.
+
 ## Resolution conditions
 
 **None.** No win, no loss, no ending, no run boundary, no score to beat.
