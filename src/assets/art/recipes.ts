@@ -60,7 +60,7 @@ export const RECIPES: readonly Recipe[] = [
   { id: 'cheesy-noodle-bake', tags: ['noodles', 'cheese'], base: 'surface', field: 'band', tone: 'zest', vessel: 'tray', form: 'noodleBlanket', garnish: ['melt', 'none'], food: 'muted', vesselColour: 'muted', accent: 'zest' },
   { id: 'meaty-noodle-bowl', tags: ['noodles', 'meat'], base: 'void', field: 'arcs', tone: 'muted', vessel: 'bowl', form: 'noodleTubes', garnish: ['herb', 'none'], food: 'muted', vesselColour: 'mint', accent: 'zest' },
   { id: 'noodle-in-bread', tags: ['noodles', 'cursed'], base: 'surface', field: 'speckle', tone: 'muted', vessel: 'none', form: 'loafBowl', garnish: ['steam', 'swarm'], food: 'zest', vesselColour: 'muted', accent: 'muted', ghost: 'grape', cursed: true, tilt: 3 },
-  { id: 'noodle-broth-cup', tags: ['noodles', 'drink'], base: 'void', field: 'stripes', tone: 'zest', vessel: 'cupLid', form: 'brothStrands', garnish: ['straw', 'steam'], food: 'zest', vesselColour: 'ink', accent: 'mint', scale: 0.88, dy: -20 },
+  { id: 'noodle-broth-cup', tags: ['noodles', 'drink'], base: 'void', field: 'stripes', tone: 'zest', vessel: 'cupLid', form: 'brothStrands', garnish: ['straw', 'steam'], food: 'zest', vesselColour: 'muted', accent: 'mint', dy: -20 },
   { id: 'sweet-noodle-dessert', tags: ['noodles', 'dessert'], base: 'surface', field: 'confetti', tone: 'grape', vessel: 'plate', form: 'noodleMound', garnish: ['drizzle', 'cherry'], food: 'ink', vesselColour: 'grape', accent: 'grape', scale: 0.9, dy: -20 },
   { id: 'noodle-nest', tags: ['noodles'], base: 'void', field: 'wedge', tone: 'muted', vessel: 'board', form: 'noodleNest', garnish: ['crumbs', 'none'], food: 'zest', vesselColour: 'muted', accent: 'ink', tilt: -4 },
   { id: 'noodle-scissors', tags: ['noodles'], base: 'surface', field: 'spot', tone: 'mint', vessel: 'wideBowl', form: 'scissorsCut', garnish: ['steam', 'none'], food: 'zest', vesselColour: 'mint', accent: 'ink' },
@@ -86,7 +86,7 @@ export const RECIPES: readonly Recipe[] = [
   { id: 'donut-glaze', tags: ['dessert', 'breakfast'], base: 'surface', field: 'halo', tone: 'grape', vessel: 'none', form: 'donut', garnish: ['sprinkles', 'none'], food: 'grape', vesselColour: 'muted', accent: 'zest' },
   { id: 'ice-cream-tower', tags: ['dessert'], base: 'void', field: 'stripes', tone: 'mint', vessel: 'cone', form: 'scoopStack', garnish: ['cherry', 'sparkle'], food: 'mint', vesselColour: 'zest', accent: 'ink', dy: 30 },
   { id: 'candy-shell', tags: ['dessert', 'cursed'], base: 'surface', field: 'speckle', tone: 'grape', vessel: 'none', form: 'candySphere', garnish: ['swarm', 'none'], food: 'zest', vesselColour: 'grape', accent: 'grape', ghost: 'mint', cursed: true, tilt: -5 },
-  { id: 'meringue-peak', tags: ['dessert'], base: 'void', field: 'arcs', tone: 'ink', vessel: 'plate', form: 'meringue', garnish: ['drizzle', 'none'], food: 'ink', vesselColour: 'muted', accent: 'zest', dy: -20 },
+  { id: 'meringue-peak', tags: ['dessert'], base: 'void', field: 'arcs', tone: 'ink', vessel: 'plate', form: 'meringue', garnish: ['sparkle', 'none'], food: 'ink', vesselColour: 'muted', accent: 'zest', dy: -20 },
   { id: 'chocolate-shatter', tags: ['dessert'], base: 'void', field: 'grid', tone: 'muted', vessel: 'board', form: 'chocSlab', garnish: ['crumbs', 'none'], food: 'grape', vesselColour: 'muted', accent: 'zest', dy: -40 },
 
   /* -------------------------------------------------------------- cursed */
@@ -114,21 +114,21 @@ export const RECIPES: readonly Recipe[] = [
   { id: 'steamed-greens', tags: ['healthy'], base: 'surface', field: 'halo', tone: 'mint', vessel: 'basket', form: 'steamedGreens', garnish: ['steam', 'none'], food: 'mint', vesselColour: 'muted', accent: 'mint' },
 
   /* ---------------------------------------------------------------- meat */
-  { id: 'grill-flip', tags: ['meat'], base: 'void', field: 'heat', tone: 'zest', vessel: 'pan', form: 'pattyFlip', garnish: ['flame', 'none'], food: 'muted', vesselColour: 'surface', accent: 'zest' },
-  { id: 'smoked-rack', tags: ['meat'], base: 'void', field: 'band', tone: 'muted', vessel: 'board', form: 'ribRack', garnish: ['bigSmoke', 'none'], food: 'muted', vesselColour: 'surface', accent: 'ink', dy: -40 },
+  { id: 'grill-flip', tags: ['meat'], base: 'void', field: 'heat', tone: 'zest', vessel: 'pan', form: 'pattyFlip', garnish: ['flame', 'none'], food: 'muted', vesselColour: 'ink', accent: 'zest' },
+  { id: 'smoked-rack', tags: ['meat'], base: 'void', field: 'band', tone: 'muted', vessel: 'board', form: 'ribRack', garnish: ['bigSmoke', 'none'], food: 'zest', vesselColour: 'muted', accent: 'ink', dy: -40 },
   { id: 'burger-stack', tags: ['meat', 'cheese'], base: 'surface', field: 'rays', tone: 'zest', vessel: 'none', form: 'burgerStack', garnish: ['sparkle', 'none'], food: 'muted', vesselColour: 'ink', accent: 'zest', scale: 0.92, dy: 40 },
   { id: 'skewer-line', tags: ['meat'], base: 'void', field: 'grid', tone: 'muted', vessel: 'none', form: 'skewers', garnish: ['flame', 'none'], food: 'muted', vesselColour: 'muted', accent: 'zest', scale: 0.9 },
   { id: 'meat-slice-fan', tags: ['meat'], base: 'void', field: 'arcs', tone: 'muted', vessel: 'plate', form: 'sliceFan', garnish: ['herb', 'none'], food: 'zest', vesselColour: 'muted', accent: 'grape', dy: -40 },
   { id: 'sauce-drizzle', tags: ['meat'], base: 'void', field: 'spot', tone: 'zest', vessel: 'plate', form: 'roastGlazed', garnish: ['drizzle', 'none'], food: 'zest', vesselColour: 'muted', accent: 'grape', dy: -30 },
-  { id: 'meat-and-hot-sauce', tags: ['meat', 'cursed'], base: 'void', field: 'speckle', tone: 'grape', vessel: 'pan', form: 'stripsPan', garnish: ['pour', 'swarm'], food: 'zest', vesselColour: 'surface', accent: 'grape', ghost: 'mint', cursed: true, tilt: 4 },
+  { id: 'meat-and-hot-sauce', tags: ['meat', 'cursed'], base: 'void', field: 'speckle', tone: 'grape', vessel: 'pan', form: 'stripsPan', garnish: ['pour', 'swarm'], food: 'zest', vesselColour: 'muted', accent: 'grape', ghost: 'mint', cursed: true, tilt: 4 },
   { id: 'meat-broth-mug', tags: ['meat', 'drink'], base: 'void', field: 'halo', tone: 'zest', vessel: 'mug', form: 'moltenPool', garnish: ['steam', 'none'], food: 'zest', vesselColour: 'muted', accent: 'ink', dy: 20 },
   { id: 'lean-protein-plate', tags: ['meat', 'healthy'], base: 'surface', field: 'dots', tone: 'mint', vessel: 'plate', form: 'filletPlate', garnish: ['none', 'none'], food: 'ink', vesselColour: 'muted', accent: 'mint', dy: -30 },
-  { id: 'rib-pull', tags: ['meat'], base: 'void', field: 'wedge', tone: 'zest', vessel: 'none', form: 'singleRib', garnish: ['flame', 'none'], food: 'zest', vesselColour: 'muted', accent: 'ink' },
+  { id: 'rib-pull', tags: ['meat'], base: 'void', field: 'wedge', tone: 'zest', vessel: 'none', form: 'singleRib', garnish: ['steam', 'none'], food: 'zest', vesselColour: 'muted', accent: 'ink' },
 
   /* --------------------------------------------------------------- drink */
   { id: 'layered-drink', tags: ['drink'], base: 'void', field: 'stripes', tone: 'grape', vessel: 'glassTall', form: 'layers', garnish: ['straw', 'none'], food: 'zest', vesselColour: 'grape', accent: 'mint' },
-  { id: 'bubble-cup', tags: ['drink'], base: 'surface', field: 'dots', tone: 'grape', vessel: 'glassTall', form: 'pearls', garnish: ['fatStraw', 'none'], food: 'grape', vesselColour: 'ink', accent: 'muted' },
-  { id: 'coffee-pour', tags: ['drink', 'breakfast'], base: 'void', field: 'wedge', tone: 'muted', vessel: 'none', form: 'pourStream', garnish: ['steam', 'none'], food: 'muted', vesselColour: 'muted', accent: 'ink' },
+  { id: 'bubble-cup', tags: ['drink'], base: 'surface', field: 'dots', tone: 'grape', vessel: 'glassTall', form: 'pearls', garnish: ['fatStraw', 'none'], food: 'grape', vesselColour: 'ink', accent: 'void' },
+  { id: 'coffee-pour', tags: ['drink', 'breakfast'], base: 'void', field: 'wedge', tone: 'muted', vessel: 'mug', form: 'pourStream', garnish: ['steam', 'none'], food: 'muted', vesselColour: 'muted', accent: 'ink', dy: 60 },
   { id: 'ice-crackle', tags: ['drink'], base: 'void', field: 'arcs', tone: 'mint', vessel: 'glassShort', form: 'iceGlass', garnish: ['fizz', 'none'], food: 'mint', vesselColour: 'ink', accent: 'ink' },
   { id: 'fruit-shake', tags: ['drink', 'dessert'], base: 'surface', field: 'confetti', tone: 'grape', vessel: 'glassTall', form: 'swirlTop', garnish: ['straw', 'cherry'], food: 'grape', vesselColour: 'ink', accent: 'ink' },
   { id: 'soda-fizz', tags: ['drink'], base: 'void', field: 'halo', tone: 'mint', vessel: 'none', form: 'canFizz', garnish: ['fizz', 'sparkle'], food: 'mint', vesselColour: 'ink', accent: 'ink' },
@@ -138,12 +138,12 @@ export const RECIPES: readonly Recipe[] = [
 
   /* ----------------------------------------------------------- breakfast */
   { id: 'pancake-stack', tags: ['breakfast'], base: 'surface', field: 'rays', tone: 'zest', vessel: 'plate', form: 'pancakeStack', garnish: ['sparkle', 'none'], food: 'zest', vesselColour: 'muted', accent: 'ink', dy: -20 },
-  { id: 'egg-flip', tags: ['breakfast'], base: 'void', field: 'spot', tone: 'ink', vessel: 'pan', form: 'eggFlip', garnish: ['flame', 'none'], food: 'ink', vesselColour: 'muted', accent: 'zest', dy: -40 },
+  { id: 'egg-flip', tags: ['breakfast'], base: 'void', field: 'spot', tone: 'ink', vessel: 'pan', form: 'eggFlip', garnish: ['flame', 'none'], food: 'ink', vesselColour: 'ink', accent: 'zest', dy: -60 },
   { id: 'toast-butter', tags: ['breakfast'], base: 'void', field: 'wedge', tone: 'zest', vessel: 'plate', form: 'toastSlice', garnish: ['crumbs', 'none'], food: 'zest', vesselColour: 'muted', accent: 'ink', dy: -40 },
   { id: 'cereal-pour', tags: ['breakfast'], base: 'void', field: 'confetti', tone: 'zest', vessel: 'wideBowl', form: 'cerealPour', garnish: ['pour', 'none'], food: 'zest', vesselColour: 'muted', accent: 'ink' },
   { id: 'breakfast-tray', tags: ['breakfast', 'healthy'], base: 'surface', field: 'grid', tone: 'mint', vessel: 'tray', form: 'smallSpread', garnish: ['steam', 'none'], food: 'mint', vesselColour: 'muted', accent: 'ink' },
   { id: 'waffle-grid', tags: ['breakfast', 'dessert'], base: 'void', field: 'dots', tone: 'zest', vessel: 'plate', form: 'waffle', garnish: ['sprinkles', 'cherry'], food: 'zest', vesselColour: 'muted', accent: 'ink', dy: -40 },
-  { id: 'breakfast-meat-pan', tags: ['breakfast', 'meat'], base: 'void', field: 'band', tone: 'zest', vessel: 'pan', form: 'stripsPan', garnish: ['steam', 'none'], food: 'muted', vesselColour: 'surface', accent: 'zest' },
+  { id: 'breakfast-meat-pan', tags: ['breakfast', 'meat'], base: 'void', field: 'band', tone: 'zest', vessel: 'pan', form: 'stripsPan', garnish: ['steam', 'none'], food: 'muted', vesselColour: 'ink', accent: 'zest' },
   { id: 'toast-soldiers', tags: ['breakfast'], base: 'surface', field: 'halo', tone: 'zest', vessel: 'board', form: 'toastSoldiers', garnish: ['crumbs', 'none'], food: 'zest', vesselColour: 'muted', accent: 'ink', dy: -50 },
   { id: 'breakfast-burrito-roll', tags: ['breakfast'], base: 'void', field: 'arcs', tone: 'zest', vessel: 'board', form: 'burritoRoll', garnish: ['herb', 'none'], food: 'zest', vesselColour: 'muted', accent: 'mint', dy: -60 },
 ];

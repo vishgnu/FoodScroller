@@ -73,7 +73,7 @@ export const VESSELS = {
   none: { back: none, front: none },
 
   bowl: bowlAt(300, 54, 250),
-  wideBowl: bowlAt(330, 62, 180),
+  wideBowl: bowlAt(318, 62, 180),
   deepBowl: bowlAt(260, 48, 300),
 
   /** A flat plate: one ellipse, one lip, nothing else. */
@@ -81,9 +81,9 @@ export const VESSELS = {
     back: none,
     front: ({ vessel }: Ctx) => (
       <>
-        <ellipse cx={0} cy={168} rx={330} ry={78} fill={vessel} />
-        <Shadow d={ellipseShade(0, 168, 330, 78)} />
-        <ellipse cx={0} cy={158} rx={232} ry={52} fill={c('void')} fillOpacity={0.18} />
+        <ellipse cx={0} cy={168} rx={318} ry={78} fill={vessel} />
+        <Shadow d={ellipseShade(0, 168, 318, 78)} />
+        <ellipse cx={0} cy={158} rx={222} ry={52} fill={c('void')} fillOpacity={0.18} />
       </>
     ),
   },
@@ -93,9 +93,8 @@ export const VESSELS = {
     back: none,
     front: ({ vessel }: Ctx) => (
       <>
-        <rect x={-340} y={150} width={640} height={56} rx={R_SHEET} fill={vessel} />
-        <Shadow d={lShade(-340, 150, 640, 56, 0.3)} />
-        <rect x={276} y={162} width={92} height={32} rx={R_CHIP} fill={vessel} />
+        <rect x={-332} y={150} width={638} height={56} rx={R_SHEET} fill={vessel} />
+        <Shadow d={lShade(-332, 150, 638, 56, 0.3)} />
       </>
     ),
   },
@@ -104,15 +103,15 @@ export const VESSELS = {
   tray: {
     back: ({ vessel }: Ctx) => (
       <>
-        <rect x={-350} y={-40} width={660} height={300} rx={R_SHEET} fill={vessel} />
-        <Shadow d={lShade(-350, -40, 660, 300, 0.16)} />
+        <rect x={-336} y={-40} width={648} height={300} rx={R_SHEET} fill={vessel} />
+        <Shadow d={lShade(-336, -40, 648, 300, 0.16)} />
       </>
     ),
     front: ({ vessel }: Ctx) => (
       <rect
-        x={-350}
+        x={-336}
         y={-40}
-        width={660}
+        width={648}
         height={300}
         rx={R_SHEET}
         fill="none"
@@ -130,20 +129,21 @@ export const VESSELS = {
   mug: {
     back: ({ vessel }: Ctx) => (
       <>
-        <path
-          d={`M${n(-230)} ${n(-30)}h60v170a70 70 0 0 1 -60 0Z`}
-          fill="none"
-          stroke={vessel}
-          strokeWidth={34}
-        />
-        <ellipse cx={0} cy={-40} rx={210} ry={62} fill={vessel} />
-        <Shadow d={ellipseShade(0, -40, 210, 62)} />
+        <ellipse cx={0} cy={-46} rx={224} ry={66} fill={vessel} />
+        <Shadow d={ellipseShade(0, -46, 224, 66)} />
       </>
     ),
     front: ({ vessel }: Ctx) => (
       <>
-        <path d={`M${n(-210)} ${n(-40)}v230a210 70 0 0 0 420 0V${n(-40)}`} fill={vessel} />
-        <Shadow d={`M210 -40v230a210 70 0 0 1 -150 68q90 -150 84 -298Z`} />
+        <path
+          d="M-236 20h-60a84 84 0 0 0 0 168h60"
+          fill="none"
+          stroke={vessel}
+          strokeWidth={40}
+          strokeLinecap="round"
+        />
+        <path d={`M${n(-224)} ${n(-46)}v250a224 74 0 0 0 448 0V${n(-46)}`} fill={vessel} />
+        <Shadow d={`M224 -46v250a224 74 0 0 1 -160 72q96 -160 90 -322Z`} />
       </>
     ),
   },
@@ -180,7 +180,7 @@ export const VESSELS = {
   pan: {
     back: ({ vessel }: Ctx) => (
       <>
-        <rect x={-460} y={28} width={240} height={40} rx={R_CHIP} fill={vessel} />
+        <rect x={-336} y={28} width={120} height={40} rx={R_CHIP} fill={vessel} />
         <ellipse cx={0} cy={60} rx={280} ry={96} fill={vessel} />
         <Shadow d={ellipseShade(0, 60, 280, 96)} />
       </>
@@ -198,7 +198,7 @@ export const VESSELS = {
     back: ({ vessel }: Ctx) => (
       <>
         <rect x={-320} y={-10} width={70} height={36} rx={R_CHIP} fill={vessel} />
-        <rect x={250} y={-10} width={70} height={36} rx={R_CHIP} fill={vessel} />
+        <rect x={240} y={-10} width={70} height={36} rx={R_CHIP} fill={vessel} />
         <ellipse cx={0} cy={-20} rx={252} ry={70} fill={vessel} />
         <Shadow d={ellipseShade(0, -20, 252, 70)} />
       </>
@@ -260,7 +260,7 @@ export const VESSELS = {
           w={7}
           opacity={0.7}
         />
-        <rect x={-460} y={-16} width={190} height={34} rx={R_CHIP} fill={vessel} />
+        <rect x={-336} y={-16} width={96} height={34} rx={R_CHIP} fill={vessel} />
       </>
     ),
   },
@@ -277,11 +277,11 @@ export const VESSELS = {
       <>
         <path d="M-250 -20v190a250 80 0 0 0 500 0V-20" fill={vessel} />
         <Shadow d="M250 -20v190a250 80 0 0 1 -168 74q102 -136 94 -264Z" />
-        <path
-          d="M-238 -66c120 -96 300 -110 420 -36 -90 -70 -300 -48 -392 26Z"
-          fill={vessel}
-          transform="rotate(-16)"
-        />
+        <g transform="translate(-120 -244) rotate(-24)">
+          <ellipse cx={0} cy={0} rx={200} ry={62} fill={vessel} />
+          <Shadow d={ellipseShade(0, 0, 200, 62)} />
+          <ellipse cx={0} cy={0} rx={148} ry={40} fill={c('void')} fillOpacity={0.35} />
+        </g>
       </>
     ),
   },

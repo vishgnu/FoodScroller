@@ -16,7 +16,7 @@ import { FORMS } from './forms';
 import { GARNISH } from './garnish';
 import { seeded } from './geom';
 import type { Ctx } from './kit';
-import { H, SUBJECT_X, SUBJECT_Y, W, c } from './tokens';
+import { H, SUBJECT_X, SUBJECT_Y, W, ZOOM, c } from './tokens';
 import { VESSELS } from './vessels';
 import type { Recipe } from './recipes';
 
@@ -53,10 +53,10 @@ function Subject({ r, ctx }: { r: Recipe; ctx: Ctx }) {
 
 export function Composition({ r }: { r: Recipe }) {
   const ctx = context(r);
-  const scale = r.scale ?? 1;
+  const scale = Math.round((r.scale ?? 1) * ZOOM * 100) / 100;
   const transform = [
     `translate(${(SUBJECT_X + (r.dx ?? 0)).toString()} ${(SUBJECT_Y + (r.dy ?? 0)).toString()})`,
-    scale === 1 ? '' : `scale(${scale.toString()})`,
+    `scale(${scale.toString()})`,
     r.tilt === undefined ? '' : `rotate(${r.tilt.toString()})`,
   ]
     .filter(Boolean)
@@ -76,7 +76,7 @@ export function Composition({ r }: { r: Recipe }) {
           group, same shading, just wrong.
         */}
         {r.ghost !== undefined && (
-          <g transform="translate(30 24)" opacity={0.42}>
+          <g transform="translate(22 18)" opacity={0.42}>
             <Subject r={r} ctx={context(r, c(r.ghost))} />
           </g>
         )}

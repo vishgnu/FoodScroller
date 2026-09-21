@@ -51,8 +51,21 @@ export const H = 1920;
  * and the caption stack covers x < 404, y > 1254. The subject box below
  * clears both (art guide, "Environments and backgrounds", foreground rule).
  */
-export const SUBJECT_X = 520;
+export const SUBJECT_X = 480;
 export const SUBJECT_Y = 810;
 
 /** Half-extent of the subject box in local coordinates. */
 export const REACH = 330;
+
+/**
+ * Global subject zoom. The feed is meant to be loud and full-bleed, and a
+ * subject authored to fit the 1080-wide canvas reads small once the phone
+ * crops it to 887 units, so this pushes it back out to the edge of what the
+ * quiet zones allow.
+ *
+ * With the anchor at 480 it puts the subject's usable local range at
+ * x ∈ [-340, 324]: the right bound is where the action rail starts and is a
+ * legibility limit, measured rather than guessed; the left bound is only a
+ * crop limit at the drift's widest, so it is the looser of the two.
+ */
+export const ZOOM = 1.08;

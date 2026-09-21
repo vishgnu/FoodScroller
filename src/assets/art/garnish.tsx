@@ -28,49 +28,49 @@ const bigSmoke: Part = ({ accent }) => (
 
 /** Two sticks entering from the top-left, the way a hand would hold them. */
 const chopsticks: Part = ({ accent }) => (
-  <g transform="rotate(-24 -60 -220)">
-    <Slab x={-360} y={-470} w={40} h={430} rx={R_CHIP} fill={accent} />
-    <Slab x={-278} y={-470} w={40} h={400} rx={R_CHIP} fill={accent} />
+  <g transform="rotate(-24 30 -220)">
+    <Slab x={-270} y={-470} w={40} h={430} rx={R_CHIP} fill={accent} />
+    <Slab x={-188} y={-470} w={40} h={400} rx={R_CHIP} fill={accent} />
   </g>
 );
 
 const fork: Part = ({ accent }) => (
-  <g transform="rotate(18 300 120)">
-    <Slab x={286} y={-40} w={34} h={300} rx={R_CHIP} fill={accent} />
-    <path d="M272 -230v130h62v-130M292 -230v120M314 -230v120" fill="none" stroke={accent} strokeWidth={22} strokeLinecap="round" />
+  <g transform="rotate(16 250 120)">
+    <Slab x={236} y={-40} w={34} h={300} rx={R_CHIP} fill={accent} />
+    <path d="M222 -230v130h62v-130M242 -230v120M264 -230v120" fill="none" stroke={accent} strokeWidth={22} strokeLinecap="round" />
   </g>
 );
 
 const spoon: Part = ({ accent }) => (
-  <g transform="rotate(-20 -290 90)">
-    <Slab x={-308} y={-60} w={34} h={310} rx={R_CHIP} fill={accent} />
-    <Disc cx={-291} cy={-140} r={82} fill={accent} />
+  <g transform="rotate(-18 -262 90)">
+    <Slab x={-280} y={-60} w={34} h={310} rx={R_CHIP} fill={accent} />
+    <Disc cx={-263} cy={-140} r={72} fill={accent} />
   </g>
 );
 
 const knifeFork: Part = ({ accent }) => (
   <g>
-    <Slab x={-402} y={-120} w={30} h={400} rx={R_CHIP} fill={accent} />
-    <path d="M-388 -230v122h30v-122M-373 -230v112" fill="none" stroke={accent} strokeWidth={18} strokeLinecap="round" />
-    <Slab x={366} y={-40} w={30} h={320} rx={R_CHIP} fill={accent} />
-    <path d="M366 -230q44 30 30 190h-30Z" fill={accent} />
+    <Slab x={-330} y={-120} w={30} h={400} rx={R_CHIP} fill={accent} />
+    <path d="M-316 -230v122h30v-122M-301 -230v112" fill="none" stroke={accent} strokeWidth={18} strokeLinecap="round" />
+    <Slab x={282} y={-40} w={30} h={320} rx={R_CHIP} fill={accent} />
+    <path d="M282 -230q44 30 30 190h-30Z" fill={accent} />
   </g>
 );
 
 /** A bent straw, leaning left so it never crosses the rail. */
-const straw: Part = ({ accent }) => (
+const straw: Part = ({ vessel }) => (
   <g>
-    <Slab x={-40} y={-460} w={46} h={210} rx={R_CHIP} fill={accent} />
-    <path d={poly([[-40, -260], [6, -260], [96, 120], [50, 120]])} fill={accent} />
+    <Slab x={-40} y={-460} w={46} h={210} rx={R_CHIP} fill={vessel} />
+    <path d={poly([[-40, -260], [6, -260], [96, 120], [50, 120]])} fill={vessel} />
     <Shadow d={poly([[-12, -260], [6, -260], [96, 120], [78, 120]])} />
   </g>
 );
 
 /** A fat bubble-tea straw. */
-const fatStraw: Part = ({ accent }) => (
+const fatStraw: Part = ({ vessel }) => (
   <g transform="rotate(-12 0 -100)">
-    <Slab x={-46} y={-470} w={92} h={640} rx={R_CHIP} fill={accent} />
-    <path d={poly([[-46, -470], [46, -470], [0, -530]])} fill={accent} />
+    <Slab x={-36} y={-470} w={72} h={640} rx={R_CHIP} fill={vessel} />
+    <path d={poly([[-36, -470], [36, -470], [0, -530]])} fill={vessel} />
   </g>
 );
 
@@ -100,7 +100,7 @@ const sprinkles: Part = ({ accent, rand }) => (
 const sprinkleStorm: Part = ({ accent, rand }) => (
   <g>
     {Array.from({ length: 64 }, (_, i) => {
-      const x = -330 + rand() * 660;
+      const x = -318 + rand() * 636;
       const y = -560 + rand() * 620;
       const rot = -40 + rand() * 80;
       return (
@@ -228,7 +228,7 @@ const flame: Part = ({ accent }) => (
     {[-170, -30, 120].map((x, i) => (
       <path
         key={x}
-        d={`M${n(x)} 120c-58 -60 -22 -112 4 -${n(150 + i * 30)}c40 74 92 92 40 ${n(150 + i * 30)}Z`}
+        d={`M${n(x)} 330c-64 -66 -24 -124 4 -${n(170 + i * 34)}c44 82 102 102 44 ${n(170 + i * 34)}Z`}
         fill={accent}
         fillOpacity={0.9}
       />
@@ -240,9 +240,9 @@ const flame: Part = ({ accent }) => (
 const sparkle: Part = ({ accent }) => (
   <g>
     {([
-      [-290, -300, 1],
-      [250, -350, 0.72],
-      [-170, 40, 0.5],
+      [-236, -300, 1],
+      [212, -350, 0.72],
+      [-150, 40, 0.5],
     ] as const).map(([x, y, s]) => (
       <path
         key={`${n(x)},${n(y)}`}
@@ -274,7 +274,7 @@ const crumbs: Part = ({ accent, rand }) => (
     {Array.from({ length: 18 }, (_, i) => (
       <rect
         key={i}
-        x={-330 + rand() * 640}
+        x={-318 + rand() * 610}
         y={150 + rand() * 110}
         width={14 + rand() * 20}
         height={14}
@@ -307,7 +307,7 @@ const scallion: Part = ({ accent }) => (
 const swarm: Part = ({ accent, rand }) => (
   <g>
     {Array.from({ length: 11 }, (_, i) => {
-      const x = -320 + rand() * 620;
+      const x = -304 + rand() * 580;
       const y = -420 + rand() * 340;
       return (
         <g key={i} transform={`translate(${n(x)} ${n(y)})`}>
@@ -328,10 +328,10 @@ const pour: Part = ({ accent }) => (
 );
 
 const lid: Part = ({ accent }) => (
-  <g transform="rotate(-14 -60 -220)">
-    <ellipse cx={-60} cy={-220} rx={240} ry={56} fill={accent} />
-    <Shadow d={`M180 -220a240 56 0 0 1 -240 56q150 -20 216 -56Z`} />
-    <Disc cx={-60} cy={-280} r={44} fill={accent} />
+  <g transform="rotate(-24 -140 -230)">
+    <ellipse cx={-140} cy={-230} rx={172} ry={46} fill={accent} />
+    <Shadow d={`M32 -230a172 46 0 0 1 -172 46q106 -18 156 -46Z`} />
+    <Disc cx={-140} cy={-280} r={38} fill={accent} />
   </g>
 );
 
