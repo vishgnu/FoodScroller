@@ -16,8 +16,8 @@ current scope baseline. Project principles live in
   project-local file overrides the plugin's version of that lane. That is
   the supported way to adapt one lane; do not fork the kit for it.
 - Lanes this project has overridden or added locally: none yet. Lanes in
-  play for the current milestone: `pm`, `engineer`, `graphics`,
-  `art-director`, `tester`.
+  play for the current milestone: `pm`, `engineer`, `game-design`,
+  `graphics`, `art-director`, `tester`.
 
 ## Agent Orchestration
 

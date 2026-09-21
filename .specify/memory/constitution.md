@@ -42,8 +42,8 @@ agent definition. The lanes are: `engineer`, `writer`, `graphics`,
 `infrastructure`, `pm`. A lane editing outside its declared scope is a
 flagged exception, not a routine choice — the affected lane should review it.
 
-Lanes in play for the current milestone: `pm`, `engineer`, `graphics`,
-`art-director`, `tester`. A lane not in play has no spec guide in `docs/`
+Lanes in play for the current milestone: `pm`, `engineer`, `game-design`,
+`graphics`, `art-director`, `tester`. A lane not in play has no spec guide in `docs/`
 yet; the guide is copied when the lane is first dispatched, never earlier.
 
 <!-- Keep this a bare list of lane names and let each lane's own definition
