@@ -12,7 +12,7 @@
  * tokens, and contains no text at all.
  *
  * `id` matches an `artId` in `src/feed/corpus.ts`. An artId with no entry here
- * renders the neutral stand-in field in `src/components/PostMedia.tsx`
+ * renders the neutral stand-in field in `src/components/PostCard.tsx`
  * instead — that is a supported state (FR-003, spec Story 4 scenario 3), so
  * `graphics` can land illustrations one at a time without breaking the feed.
  *
