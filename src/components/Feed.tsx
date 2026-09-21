@@ -117,17 +117,27 @@ export function Feed() {
         {indices.map((index) => {
           const post = feed.at(index);
           if (!post) {
-            // Past what the session still holds (FR-013). There is no snap
-            // anchor down here either, so the feed simply stops at the oldest
-            // retained post; this is the defensive case, not the normal one.
+            /*
+             * Past what the session still holds (FR-013). No snap anchor
+             * exists up here, so the feed cannot come to rest on it — but a
+             * held drag at the retention floor rubber-bands about one post
+             * into this space, which makes it player-visible.
+             *
+             * So it is a designed state rather than a message: `void` with
+             * the same grab handle the top of a sheet carries, drawn from
+             * palette tokens and carrying no copy at all. It reads as the
+             * end of the rubber-band, which is exactly what it is. A
+             * developer sentence must never be reachable by a player.
+             */
             return (
-              <article
+              <div
                 key={`released-${index.toString()}`}
                 className="post post--released"
                 style={{ top: `calc(${index.toString()} * 100dvh)` }}
+                aria-hidden="true"
               >
-                <p>This one has scrolled out of the session. Keep going down.</p>
-              </article>
+                <span className="post__handle" />
+              </div>
             );
           }
           return (

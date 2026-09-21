@@ -150,13 +150,22 @@ button {
   scroll-snap-stop: always;
 }
 
+/*
+ * Released space — above the retention floor (FR-013). Reachable only as
+ * the rubber-band of a held drag, never as a resting position, and
+ * deliberately wordless: `void` and the grab handle, nothing to read.
+ */
 .post--released {
   display: grid;
-  place-items: center;
-  color: var(--muted);
-  font-size: 0.8125rem;
-  text-align: center;
-  padding: 0 32px;
+  place-items: end center;
+  padding-bottom: 5dvh; /* sits in the strip the rubber-band actually shows */
+}
+
+.post--released .post__handle {
+  width: 36px;
+  height: 4px;
+  border-radius: var(--r-chip);
+  background: var(--ink-16);
 }
 
 /* --------------------------------------------------------- post media */
