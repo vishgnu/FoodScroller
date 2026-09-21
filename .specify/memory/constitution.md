@@ -13,27 +13,47 @@ copy under `docs/`.
 
 ### I. Originality and Licensing
 Every piece of content shipped — story, character names, dialogue, art,
-music, sound — MUST be [this project's position: e.g. original work; or
-original plus explicitly licensed third-party assets, listed in
-`[attribution file]`]. Genre, technique, and mechanics may be studied and
-copied; another work's specific text, characters, or assets may not be
-reproduced, even when referenced for tone. Where the project builds on an
-existing genre or homage, say so here: [what is being homaged, and what that
-does not license].
+music, sound — MUST be **original work produced inside this repository**.
+There are no third-party assets and therefore no attribution file; if that
+ever changes, this sentence changes first. Genre, technique, and mechanics
+may be studied and copied; another work's specific text, characters, or
+assets may not be reproduced, even when referenced for tone.
+
+What is being homaged: **the shared interface grammar of vertical
+short-form feeds** — full-bleed posts, snap scrolling, a right-hand
+engagement rail, bottom tab bar. That grammar is a format, and formats are
+free to satirise. It licenses nothing else: not a name, not a wordmark, not
+an app icon, not a signature colour pair, not a real account's text.
 
 This project is satire of a social feed, which makes the line above load
-bearing rather than boilerplate: [which real platforms, brands, accounts or
-people may be referenced, in what form, and which may not]. Parody of a
-format is not licence to reproduce a trademark, a logo, a real person's
-likeness, or a real account's text.
+bearing rather than boilerplate. The position is **fictional platform,
+recognisable format**:
+
+- The platform in the game is fictional and carries no real product's name.
+  No real platform, company, brand or product name appears in art, copy,
+  identifiers, filenames or commit messages.
+- **No real people.** No likeness, no name, no handle, no reproduced text
+  from any real account, categorically — not as a joke, not as a cameo.
+- **No real businesses.** No real restaurant, chain or food brand appears
+  as the subject of a post. "Utter nonsense" about a real business is the
+  one version of this that could harm someone specific.
+- No real wordmark, logo, app icon or signature colour pair is reproduced;
+  see `docs/art-style-guide.md`, which makes this checkable.
+
+Parody of a format is not licence to reproduce a trademark, a logo, a real
+person's likeness, or a real account's text.
 
 Generated art and audio make provenance a live concern, not a theoretical
 one: a model's output can carry recognizable characters, logos, style
 signatures, or watermarks, and the tool's own terms decide what may ship.
-State the project's position: [which generation tools are permitted, under
-which license terms, what review a generated asset gets before it ships, and
-where provenance is recorded]. An asset whose provenance cannot be stated is
-not shippable.
+The project's position is the strictest one available, and it is chosen
+because it makes the question disappear rather than manage it: **no
+generative image or audio tooling is used at all.** Every asset is
+hand-authored SVG committed to this repository. Provenance is the source
+file and its diff — there is nothing else to record, and nothing to review
+for a watermark or a memorised logo. An asset whose provenance cannot be
+stated is not shippable; here, an asset that is not readable vector source
+in this repo is not an asset.
 
 ### II. Lane-Scoped Ownership
 Work is split into lanes, each with a defined file scope, declared in its
@@ -81,10 +101,10 @@ from quietly making calls that were never the user's intent.
 
 ### V. Verify Before Claiming Done
 A task is not done because the code was written or read — it's done when
-[build command] and [lint/typecheck command] are clean AND the actual runtime
-behavior was verified ([runtime verification method, e.g. browser automation]
-for anything touching the running game; a manual check for anything else with
-observable output). A lane without shell access hands off exactly what still
+`npm run build` and `npm run check` (lint + typecheck) are clean AND the
+actual runtime behavior was verified (browser automation against the dev
+server for anything touching the running game; a manual check for anything
+else with observable output). A lane without shell access hands off exactly what still
 needs verification rather than asserting it's clean. Rationale: code reads
 miss the bugs that only appear at runtime — asset-id mismatches between
 lanes, interaction states, timing.
@@ -96,18 +116,25 @@ lanes, interaction states, timing.
   text layout and accessibility are requirements here, not conveniences.
   [Pinned major versions and the tsconfig strictness setting — `engineer`
   fills these in when the toolchain lands.]
-- **Art tooling**: [which generation or authoring tools exist in this
-  environment, and which do not]. This is a hard constraint, not a stylistic
-  preference — code or plans that assume an unavailable tool are broken by
-  definition. The art style itself is governed by `docs/art-style-guide.md`,
+- **Art tooling**: hand-authored **SVG only**, written as source in this
+  repository. No image generation tooling, no raster editors, no binary
+  image assets. This is a hard constraint, not a stylistic preference —
+  code or plans that assume an unavailable tool are broken by definition.
+  The art style itself is governed by `docs/art-style-guide.md`,
   versioned separately from the `graphics`/`art-director` lane definitions so
   the *look* can be swapped without rewriting the *process* rules.
 - **Audio tooling**: [not decided — the `sound` lane is not in play. Decide
   when it is, and copy its guide at the same time.]
-- **Runtime/deployment**: [backend or static-only, state storage, deploy
-  target].
-- **Other hard constraints**: [target platforms, resolution/scaling,
-  performance budget, accessibility floor].
+- **Runtime/deployment**: static single-page app. No backend, no network
+  requests at runtime, no accounts, no analytics. All state is in memory
+  for the current session only — nothing is written to storage of any kind.
+  Deploy target is `devops`'s to decide and that lane is not yet in play.
+- **Other hard constraints**: mobile-first browser, reference viewport
+  **390×844**, must remain usable with mouse and keyboard on desktop.
+  Performance budget: scrolling after 200 posts is indistinguishable from
+  scrolling at the first post. Accessibility floor: all legible content is
+  live text, 4.5:1 contrast minimum, and `prefers-reduced-motion` is
+  honoured.
 
 ## Development Workflow
 
@@ -142,4 +169,4 @@ Development Workflow section above. Compliance is reviewed the same way any
 lane's output is reviewed — against this document and the repo's existing
 conventions, not reviewer preference.
 
-**Version**: 0.1.0 | **Ratified**: [YYYY-MM-DD — not ratified; brackets above are still open] | **Last Amended**: 2026-09-21
+**Version**: 1.0.0 | **Ratified**: 2026-09-21 | **Last Amended**: 2026-09-21

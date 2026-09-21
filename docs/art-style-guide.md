@@ -1,92 +1,187 @@
-# Art style guide — v[N] "[short name for this visual direction]"
+# Art style guide — v1 "Doomfeed"
 
-This is the canonical spec for [project]'s visual identity — what a
-background, a character, or an icon has to look like to belong in this
-game. It is kept separate from the `graphics` and `art-director` agent
-definitions on purpose: this doc is the swappable part. If the game's
-whole look changes later, this file gets re-versioned and every asset
-gets a pass against the new version, while those agents' *process* rules
-(file scope, tooling, handoff) keep working unchanged.
+This is the canonical spec for FoodScroller's visual identity — what a
+post, an avatar, or an icon has to look like to belong in this game. It is
+kept separate from the `graphics` and `art-director` agent definitions on
+purpose: this doc is the swappable part.
 
 **Precedence:** if this doc and an agent definition disagree, this doc
 wins for anything about *how the art should look*; the agent definition
 wins for *where files live* and *what tooling is allowed*.
 
-Status: **[current style | draft | superseded by vN]** — [one line on how
-this version was arrived at, and which reference assets embody it].
+Status: **current style** — arrived at from the user's direction ("a mix
+of YouTube Shorts, TikTok and Insta, so addicted teens relate") read
+against Constitution Principle I. The canonical reference assets are the
+hero post illustration and the icon set in `src/assets/`.
 
-Every registered asset records the version in this file's title, so
-bumping the version produces the list of assets that need a pass. Bump it
-whenever a rule below changes in a way that would make existing art wrong.
+Every registered asset records the version in this file's title.
 
 ## Direction and references
 
-[The one-sentence version of the look, then the references that pin it
-down — eras, media, specific games or artists, and just as importantly
-what it is *not*.] Write this so someone can tell a near-miss from a hit;
-everything below is the enforceable form of what this section claims.
+**A vertical, full-bleed, short-form feed that any teenager recognises in
+half a second and cannot name.**
+
+The references are the *format* shared by YouTube Shorts, TikTok and
+Instagram Reels: one post filling the whole screen, snap-scrolled
+vertically, a column of engagement icons down the right edge, creator
+handle and caption stacked bottom-left, a persistent tab bar at the
+bottom. That grammar is the reference — the feel of the thing, learned by
+muscle memory from all three.
+
+What it is **not**, and this is enforceable rather than cautious:
+
+- **Not any one of them.** No real wordmark, logo, app icon, or brand
+  name appears anywhere, in art or in copy. The platform in this game is
+  fictional and unnamed-by-any-real-name.
+- **Not their exact colours.** The palette below is deliberately none of
+  the three signature schemes. An asset that lands on a real platform's
+  signature colour pair is wrong even if it looks good.
+- **Not photographic.** All food is illustrated flat vector. Photoreal
+  food reads as a stock library and drags provenance questions in with
+  it.
+- **Not affectionate.** The look is slick, dense, and slightly too loud —
+  the point is that it is *effective*, not that it is pretty. Charm is a
+  near-miss.
+
+A near-miss to watch for: "tasteful minimal food app." That is a different
+genre and it kills the premise, because nobody is addicted to a tasteful
+minimal food app.
 
 ## Palette
 
-[Total color budget, the named palette families, and their hex values.
-Say what a new asset may do: extend the palette, or only draw from it.]
-Palette is the fastest way a generated asset betrays that it came from
-somewhere else, so state the budget as a hard number.
+**Hard budget: 8 colours and 1 gradient. An asset may only draw from
+these. Extending the palette is an amendment to this document, not an
+asset-level decision.**
+
+| Token | Hex | Use |
+|---|---|---|
+| `void` | `#0B0B0F` | Feed background, behind everything |
+| `surface` | `#16161C` | Cards, sheets, bars |
+| `ink` | `#F5F5F7` | Primary text and icons on dark |
+| `muted` | `#9A9AA8` | Secondary text, inactive icons, counts at rest |
+| `pulse` | `#FF2D6F` | The engagement action. Reserved — nothing else uses it |
+| `zest` | `#FFC53D` | Food warmth, "sponsored", anything selling you something |
+| `mint` | `#2BD9A6` | Verification ticks, confirmations, "safe" signals |
+| `grape` | `#7C4DFF` | The second half of the gradient; sparingly on its own |
+
+**`ring` gradient**: `pulse → grape`, 135°. Used only for the avatar ring
+and the one place the UI wants you to feel that something is live. Never
+as a fill for food.
+
+`pulse` being reserved for engagement is the single most load-bearing
+palette rule here. It is how the eye learns where the reward is, which is
+the mechanic.
 
 ## Resolution, format, and aspect
 
-[Canvas sizes and aspect ratios per asset class; file formats; native vs.
-display resolution; transparency, margin, and pivot/anchor conventions.]
-These are the rules the build and the engine actually depend on, so keep
-them exact rather than descriptive.
+Exact, because the build depends on them:
+
+- **Post media**: aspect **9:16**, authored at **1080×1920** intrinsic.
+  Full-bleed — the media reaches every edge of the viewport and is
+  overlaid by UI. No baked-in margins, no baked-in text.
+- **Avatars**: **1:1**, authored at 96×96, displayed at 44px.
+- **Icons**: **24×24** grid, **2px** stroke, rounded caps and joins.
+- **Format**: **SVG only.** All authored art is hand-written vector in
+  this repository. No raster assets, no generated images. This is the
+  provenance position in Constitution Principle I made concrete — every
+  asset's origin is its own source, readable in the diff.
+- **Text is never art.** Captions, handles and counts are live DOM text,
+  always. Nothing legible is drawn into an SVG. This is an accessibility
+  requirement, not a preference.
+- **Safe area**: UI keeps 16px from the viewport edge and clears the
+  bottom tab bar; media does not.
 
 ## Character construction
 
-[Proportions, silhouette rules, outline treatment, shading limits, facial
-detail budget, draw order, animation frame conventions.] Say which of
-these must be identical across the whole cast and which are the character's
-own — that split is what makes a cast read as one cast.
+"Characters" here are creator avatars, not a cast. Identical across all of
+them:
+
+- Flat vector, no gradients except `ring`, no texture, no drop shadows.
+- 2px outline in `void` where a shape meets a like-valued shape; none
+  otherwise.
+- Single light source, top-left, 45°. One shading step maximum.
+- Face detail budget: **two dots and one arc**, or no face at all.
+  Anything more reads as a character and this is not a game with a cast.
+
+The avatar's own: silhouette, palette pair drawn from the eight, and one
+accessory shape.
 
 ## Environments and backgrounds
 
-[Perspective and horizon conventions, depth and layering, lighting model
-and where light is allowed to come from, density of detail, and how much
-contrast the playable foreground must keep against the background.]
+There are effectively none — a post fills the screen and *is* the
+background. Where a post's illustration needs depth, it gets exactly two
+layers: subject and flat field. No horizon, no perspective, no
+atmospheric depth.
+
+The foreground rule that matters: **UI must hold contrast against any
+post.** Every post illustration must keep its bottom-left third and
+right edge visually quiet enough that `ink` text and icons stay legible
+over them, or carry the scrim defined in the UI section.
 
 ## UI and icons
 
-[Frames, panels, typography or lettering treatment, icon grid and weight,
-state treatments (hover, disabled, selected), and how UI relates to the
-world art — same look, or deliberately separate.]
+- **Typography**: the system UI stack. Counts and handles heavy (700),
+  captions regular (400). Never a display face — the genre uses system
+  type and that is part of why it feels native.
+- **Icon grid**: 24×24, 2px stroke, rounded. Filled only to show an
+  active state.
+- **Corner radii**: 8 (chips), 16 (cards), 24 (sheets). No other values.
+- **States**: at rest `muted`; active `ink`; engaged `pulse`, filled, with
+  one scale pop. Disabled is `muted` at 40% and does not appear in this
+  phase.
+- **Scrim**: any UI over media sits on a bottom-up `void` gradient, 0% to
+  70%, covering the lower third, and a right-edge vignette at 40%. This
+  is what makes the contrast rule above enforceable.
+- **Relationship to the art**: deliberately separate. The UI is crisp,
+  systemic and cold; the food is warm and hand-drawn. That tension is the
+  joke — the interface is not on the food's side.
 
 ## Must read at gameplay resolution
 
-[The things that have to survive being shown at actual in-game size:
-which silhouettes must be distinguishable from each other, which
-interactive elements must be findable, what minimum contrast and stroke
-weight hold.] Art is reviewed at this size, not at the size it was made.
+Reviewed at **390×844** (a phone), not at authoring size:
+
+- Every action-rail icon is distinguishable from the others in
+  silhouette alone, greyscale, at 24px.
+- `ink` on any post holds **4.5:1** contrast, with the scrim applied.
+- `pulse` is identifiable as the engagement colour without reading any
+  label.
+- The food in a post is identifiable as *what food it is* at full-screen
+  size, from across a room.
 
 ## Consistency anchors for generated art
 
-[The traits that must hold identical across every generation — the ones a
-reviewer checks first: outline weight, proportion ratios, lighting angle,
-palette membership, level of detail, edge treatment.] List them as
-checkable properties, not adjectives.
+Checkable properties, in review order:
 
-[Also name the reference assets that are canonical for each asset class.]
-New work is compared against these originals, never only against the most
-recently accepted asset.
+1. Palette membership — every fill and stroke is one of the eight tokens
+   or the named gradient. No exceptions, no "nearly".
+2. Stroke weight — 2px at the 24px icon grid; proportionally scaled
+   elsewhere, never optically adjusted.
+3. Light source — top-left, 45°, one shading step.
+4. Corner radii — 8, 16, or 24. Nothing between.
+5. Detail level — two layers per illustration, face budget two dots and
+   one arc.
+6. `pulse` usage — engagement only. A `pulse` fill anywhere else fails.
+7. No text inside any SVG.
+
+Canonical references: the hero post illustration and the action-rail icon
+set in `src/assets/`. New work is compared against those, never only
+against the most recently accepted asset.
 
 ## Known drift risks
 
-[The ways generated art has already been seen to wander on this project:
-each entry is what drifts, in which direction, and the check that catches
-it.] Add an entry every time the review gate returns an asset for the same
-reason twice — that is the signal the guide, not the prompt, was at fault.
+- **Drift toward one real platform.** The mix collapses toward whichever
+  of the three the author used most recently. *Check*: hold the screen up
+  and try to name it. If a name comes, it has drifted.
+- **Palette creep.** A ninth colour arrives as "just this once" for a
+  badge. *Check*: anchor 1, mechanically.
+- **`pulse` leaking.** Used for a non-engagement highlight because it
+  looks good. *Check*: anchor 6.
+- **Food getting tasteful.** Illustrations drift calm and muted, and the
+  feed stops feeling loud. *Check*: does it still look like it is trying
+  to sell you something?
 
 ## What this doc does not cover
 
 Process rules — file scope, allowed tooling, where assets live, how the
 asset pipeline runs — live in the agent definitions and the
-`asset-pipeline` skill, not here. This doc should be replaceable wholesale
-without touching any of them.
+`asset-pipeline` skill, not here.

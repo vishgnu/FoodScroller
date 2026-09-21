@@ -1,101 +1,120 @@
-# Progression spec — v[N] "[short name for this game's structure]"
+# Progression spec — v1 "The Pull"
 
-This is the canonical spec for [project]'s progression — what gates what,
-which state each gate reads, how a player gets from a fresh start to a
-resolution, and which resolutions exist. It is kept separate from the
-`game-design` agent definition on purpose: this doc is the swappable part.
-If the structure is reworked later, this file gets re-versioned and every
-gate, path and resolution gets a pass against it, while that agent's
-*process* rules (file scope, tooling, handoff) keep working unchanged.
+This is the canonical spec for FoodScroller's progression. It is kept
+separate from the `game-design` agent definition on purpose: this doc is
+the swappable part.
 
 **Precedence:** if this doc and an agent definition disagree, this doc
 wins for anything about *what the game's progression should be*; the agent
 definition wins for *where files live* and *what tooling is allowed*.
 
-Status: **[current design | draft | superseded by vN]** — [one line on how
-this version was arrived at, and which existing content implements it].
-
-Bump the version whenever a rule below changes in a way that would make
-existing progression data wrong; the bump is what produces the list of
-gates and resolutions that need re-checking.
+Status: **current design** — arrived at from decision 0006 (the feed is
+endless) and the phase 1 spec, `specs/001-endless-food-feed/spec.md`.
 
 ## The progression model
 
-[Name the shape this game's structure takes, before anything else: a
-dependency graph, a level or chapter sequence, runs plus meta-progression,
-a tech tree, an ability ladder, an economy curve — or a combination. Then
-its size, and how much is open at once versus strictly ordered.]
-Everything below is written in the vocabulary this section establishes;
-without it the gates are ones nobody can place relative to each other.
+**There is no progression graph. There is one reinforcement loop.**
+
+The shape is a single variable-reward loop over an unbounded sequence.
+Nothing unlocks, nothing is earned, nothing is completed. What changes
+over a session is only *what the feed serves you*, and it changes in
+response to what you engaged with — never in response to time, score, or
+position.
+
+Size: unbounded. Everything is open at once because there is nothing to
+open.
+
+This is a deliberate structural joke. A progression spec for a game with
+no progression is the point: the format promises advancement and delivers
+recurrence, and the design document is where that is easiest to see.
 
 ## Gates
 
-[Every kind of thing that blocks progress here and what opens it: an item
-held, a prerequisite solved, a threshold reached, a choice taken, a
-currency spent, a boss beaten, a run survived. Then the convention for
-expressing a gate in this project's data — condition form, how multiple
-requirements combine, whether gates are one-way.] State the convention
-once, so gates are checkable mechanically rather than read one by one.
+**None.** No content is locked. No state gates any other state.
+
+This section exists to say so explicitly, because a blank gates section
+reads like an omission and this is a decision. Any future proposal to add
+a gate is a change to this document first.
 
 ## The state vocabulary
 
-[The flags, counters, inventory entries, unlocks and records the gates key
-off — each one's name, what it means, what writes it, what reads it.] This
-must correspond to the state schema the `engineer` lane owns: a gate may
-only key off state that exists there *and* that something actually sets. A
-gate keyed on state nothing ever writes is a dead gate — it never opens,
-or opens immediately, and nothing errors. A name the schema lacks is a
-handoff, not a fact this doc can assert alone.
+All state is session-local and discarded when the tab closes (decision
+0006, spec FR-008).
+
+- **`seen`** — how many posts have passed. Used for nothing that changes
+  the feed in phase 1; recorded so later phases have it.
+- **`engaged`** — the set of post ids the player has engaged with. Drives
+  the post's own engaged appearance, and nothing else.
+- **`affinity`** — a short, decaying window of the **tags** carried by
+  recently engaged posts. This is the only state that changes what the
+  feed serves. Window: the last 5 engagements. Older ones fall out
+  entirely rather than fading to a weight.
+
+`affinity` being a short window rather than an accumulating profile is
+load-bearing. An accumulating profile is a progression system wearing a
+disguise, and it would make the feed converge instead of churn. Churn is
+the mechanic.
 
 ## Reachability invariants
 
-[What must hold for every legal sequence of player actions, not just the
-intended one: which resolutions stay reachable from a fresh start, which
-resources stay recoverable or are made unspendable, which transitions are
-one-way and what must happen first.] Unwinnable states and softlocks are
-the defect class — a consumable spent on the wrong door, a one-way
-transition before a required pickup, a bankrupt economy. Write each
-invariant so it can be traced against the data and falsified.
+There is no path to guarantee, but there are two properties the feed must
+hold, and both are testable:
+
+1. **No tag can capture the feed.** At least **40%** of served posts must
+   fall outside the current `affinity` window, always. A feed that
+   collapses to one topic stops being a feed and becomes a search result.
+2. **No post repeats within 20 posts.** Recurrence is the joke; visible
+   repetition is a bug.
 
 ## Resolution conditions
 
-[Every terminal or milestone state reachable — endings, win and lose
-states, run outcomes, score or rank thresholds — and the exact condition
-firing each, in the vocabulary above. For each: whether it ends the
-session or is a beat that gates later content, and which wins when
-several hold at once.] Ambiguous priority between simultaneously
-satisfied resolutions is a real bug; settle it here, not in the runtime.
+**None.** No win, no loss, no ending, no run boundary, no score to beat.
+The session ends when the player closes the tab, and nothing in the game
+acknowledges that this happened.
+
+This is deleted rather than deferred (decision 0006). A later proposal to
+add an ending is a redesign, not a feature.
 
 ## Outcome variety
 
-[How much the resolutions should differ, and along which axes — what the
-player did, carried, sided with, how efficiently they finished, what they
-left behind — and what distinguishes each from its nearest neighbour.]
-Worth aiming at on a narrative project: outcomes are worth having when
-they differ meaningfully from one another rather than being a win/lose
-binary with a swapped adjective — different in what they say happened and
-why. A score- or run-based game may reasonably leave this blank.
+Not applicable — there are no outcomes. The variety that matters is
+*within* a session: what the feed serves, how quickly it reacts, and
+whether the reaction is legible.
 
 ## Pacing and difficulty intent
 
-[The shape the experience should have over time: how long a full path or a
-single run takes, where difficulty peaks and relents, how fast the game
-opens up, how much failure is expected, and what the first and last ten
-minutes should feel like.]
+There is no difficulty. There is pacing, and in phase 1 it is
+deliberately **flat**:
+
+- The feed serves at a constant register. Nothing escalates.
+- One engagement produces one visible response within **5 posts**
+  (spec SC-004).
+- Elapsed time changes nothing (spec FR-011).
+
+The escalation curve — how nonsense compounds the longer you stay — is
+**phase 2's**, and phase 1 must not pre-empt it by hard-coding a ramp.
+Phase 1 establishes the flat baseline that a curve is later measured
+against. Without the baseline there is no way to tell escalation from
+noise.
 
 ## Known risks
 
-[The places in *this* game's structure most likely to produce a softlock,
-a dead gate, or an unreachable outcome: each entry names the structure at
-risk, the failure it would produce, and the check that catches it.] Add an
-entry whenever a trace or a playtest turns one up: the sections above say
-what should be true, this one where it is most likely not to be.
+- **Degenerate feed collapse.** `affinity` pulls everything toward one
+  tag and the feed becomes monotonous. *Caught by* reachability invariant
+  1, which is a testable ratio, not a judgement call.
+- **Accumulating state creeping in.** Someone adds a counter that
+  persists across the window "because it's useful", and the feed quietly
+  gains a progression system. *Caught by* the state vocabulary above
+  being exhaustive: state not listed here does not exist.
+- **The seam problem.** Recorded in decision 0006 and in the phase 1
+  spec's Known Design Risk: satire of compulsion that successfully
+  creates compulsion is indistinguishable from its subject unless
+  something makes the seam visible. Phase 1 establishes the pull and does
+  not answer this. It is an outstanding requirement on a later phase, and
+  it is a progression question rather than a writing or art one, because
+  the answer is about what the loop *does*.
 
 ## What this doc does not cover
 
-Process rules — file scope, allowed tooling, where progression and
-resolution data live, how a design pass is handed off — live in the agent
-definitions, not here. The state *schema* belongs to `engineer` and any
-outcome's prose to `writer`; this doc names the state a gate reads and
-what an outcome must convey, never field types or text. It should be
-replaceable wholesale without touching any of them.
+Process rules — file scope, tooling, handoff — live in the `game-design`
+agent definition, not here.
