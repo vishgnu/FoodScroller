@@ -63,7 +63,7 @@ agent definition. The lanes are: `engineer`, `writer`, `graphics`,
 flagged exception, not a routine choice — the affected lane should review it.
 
 Lanes in play for the current milestone: `pm`, `engineer`, `game-design`,
-`graphics`, `art-director`, `tester`. A lane not in play has no spec guide in `docs/`
+`graphics`, `art-director`, `tester`, `writer`. A lane not in play has no spec guide in `docs/`
 yet; the guide is copied when the lane is first dispatched, never earlier.
 
 <!-- Keep this a bare list of lane names and let each lane's own definition
@@ -172,4 +172,4 @@ Development Workflow section above. Compliance is reviewed the same way any
 lane's output is reviewed — against this document and the repo's existing
 conventions, not reviewer preference.
 
-**Version**: 1.0.1 | **Ratified**: 2026-09-21 | **Last Amended**: 2026-09-21
+**Version**: 1.0.2 | **Ratified**: 2026-09-21 | **Last Amended**: 2026-09-22

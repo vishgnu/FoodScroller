@@ -17,7 +17,7 @@ current scope baseline. Project principles live in
   the supported way to adapt one lane; do not fork the kit for it.
 - Lanes this project has overridden or added locally: none yet. Lanes in
   play for the current milestone: `pm`, `engineer`, `game-design`,
-  `graphics`, `art-director`, `tester`.
+  `graphics`, `art-director`, `tester`, `writer`.
 
 ## Agent Orchestration
 
