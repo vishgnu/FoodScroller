@@ -3,7 +3,7 @@
 Date: 2026-09-22
 Status: decided
 Kind: process
-Issue: —
+Issue: — (the open question it leaves is tracked in #17)
 
 ## Context
 
