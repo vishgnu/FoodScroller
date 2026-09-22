@@ -48,10 +48,13 @@ the platform lands whole.
 
 ## Consequence
 
-- Phase 1 was built and shipped against "no storage of any kind."
-  `src/feed/`, the feed schema in `src/feed/types.ts`, and the spec
-  baseline in `specs/001-endless-food-feed/` all assume a session that
-  cannot persist. Revisiting them is `engineer`'s, tracked separately.
+- Phase 1 needs no change and is not invalidated. #17 said option B
+  "invalidates parts of what has already shipped"; that was wrong, and
+  this entry is the correction. The old clause *forbade* persistence and
+  the new one *permits* it, so a feed that persists nothing is still
+  compliant. What changes is the status of that property: in
+  `specs/001-endless-food-feed/` it read as a constitutional requirement
+  and is now a phase-1 product choice. No code is owed.
 - Browser storage stays off-limits. Saves go through the platform API, not
   `localStorage`. `CLAUDE.md`'s project-specific rule is amended to say so
   rather than deleted.
