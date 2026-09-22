@@ -4,6 +4,9 @@ Orientation for Claude Code sessions working in this repo. See `README.md`
 for what FoodScroller is and `specs/<n>-<name>/spec.md` (Spec Kit) for the
 current scope baseline. Project principles live in
 `.specify/memory/constitution.md` — the project's single constitution.
+The cloud platform the pipelines run on is specified in
+`docs/platform-guide.md`, with the account owner's steps in
+`docs/platform-handoff.md`; both are unratified, see decision 0011.
 
 ## Lanes
 
@@ -17,7 +20,8 @@ current scope baseline. Project principles live in
   the supported way to adapt one lane; do not fork the kit for it.
 - Lanes this project has overridden or added locally: none yet. Lanes in
   play for the current milestone: `pm`, `engineer`, `game-design`,
-  `graphics`, `art-director`, `tester`, `writer`.
+  `graphics`, `art-director`, `tester`, `writer`, `devops`,
+  `infrastructure` (the last two joined in decision 0011).
 
 ## Agent Orchestration
 
