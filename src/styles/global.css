@@ -1,0 +1,619 @@
+@import './tokens.css';
+
+/*
+ * Global layout and component styles. No colour literals here — tokens only.
+ * Heights are dvh, never vh: mobile browser chrome makes vh wrong.
+ *
+ * Every type size is `rem`, never `px`, and `html` never sets a font-size:
+ * that is what makes a device's enlarged-text preference actually enlarge
+ * the text (FR-015). 1rem is the root size the player asked for — 16px if
+ * they asked for nothing. Page zoom is unaffected; it scales rem and px
+ * alike.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--void);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 0.9375rem; /* 15px at a 16px root */
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: var(--r-chip);
+}
+
+/* ---------------------------------------------------------------- app */
+
+.app {
+  position: relative;
+  height: 100dvh;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  background: var(--void);
+}
+
+/* ---------------------------------------------------------- top tabs */
+
+.toptabs {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  height: 52px;
+  padding-top: env(safe-area-inset-top);
+  background: linear-gradient(to bottom, var(--void-70), var(--void-0));
+  pointer-events: none;
+}
+
+.toptabs__tab {
+  pointer-events: auto;
+  position: relative;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  padding: 4px 2px;
+}
+
+.toptabs__tab--active {
+  color: var(--ink);
+}
+
+.toptabs__tab--active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 20px;
+  height: 2px;
+  margin-left: -10px;
+  border-radius: var(--r-chip);
+  background: var(--ink);
+}
+
+.toptabs__tab--inert {
+  cursor: default;
+}
+
+/* --------------------------------------------------------------- feed */
+
+.feed {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.feed::-webkit-scrollbar {
+  display: none;
+}
+
+.feed__spacer {
+  position: relative;
+  width: 100%;
+}
+
+.post {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100dvh;
+  contain: layout paint style;
+  overflow: hidden;
+  background: var(--void);
+}
+
+.snap {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 100dvh;
+  pointer-events: none;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/*
+ * Released space — above the retention floor (FR-013). Reachable only as
+ * the rubber-band of a held drag, never as a resting position, and
+ * deliberately wordless: `void` and the grab handle, nothing to read.
+ */
+.post--released {
+  display: grid;
+  place-items: end center;
+  padding-bottom: 5dvh; /* sits in the strip the rubber-band actually shows */
+}
+
+.post--released .post__handle {
+  width: 36px;
+  height: 4px;
+  border-radius: var(--r-chip);
+  background: var(--ink-16);
+}
+
+/* --------------------------------------------------------- post media */
+
+.media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.media__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.media__art > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* media drift — disabled under prefers-reduced-motion */
+.media--drift .media__art {
+  animation: drift 18s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes drift {
+  from {
+    transform: scale(1.04) translate3d(0, -0.6%, 0);
+  }
+  to {
+    transform: scale(1.09) translate3d(0, 0.6%, 0);
+  }
+}
+
+/*
+ * Scrim (art guide, UI section): bottom-up void gradient 0% -> 70% over the
+ * lower third, plus a right-edge vignette at 40%. This is what makes the
+ * "ink holds 4.5:1 over any post" rule enforceable.
+ */
+.scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.scrim::before {
+  content: '';
+  position: absolute;
+  inset: 66% 0 0 0;
+  background: linear-gradient(to top, var(--void-70), var(--void-0));
+}
+
+.scrim::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 0 62%;
+  background: linear-gradient(to left, var(--void-40), var(--void-0));
+}
+
+.scrim--top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 132px;
+  background: linear-gradient(to bottom, var(--void-40), var(--void-0));
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------- post meta */
+
+.meta {
+  position: absolute;
+  left: var(--safe);
+  right: calc(var(--safe) + 4.5rem); /* clears the rail, and grows with it */
+  bottom: calc(var(--nav-h) + var(--safe) + env(safe-area-inset-bottom));
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  /*
+   * The stack is bottom-anchored and grows upward, so at enlarged text it
+   * would run off the top of the post and under the tabs. Cap it at the
+   * space between the tabs and the nav; the caption is the only item
+   * allowed to shrink, so the handle, tags and sound line always survive.
+   */
+  max-height: calc(100dvh - var(--nav-h) - 52px - 2 * var(--safe));
+}
+
+.meta > * {
+  flex: 0 0 auto;
+}
+
+.meta > .meta__caption {
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+.meta__handle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--ink);
+
+  /* A handle has no spaces to break at, so at doubled text it would run out
+   * of the stack and under the rail. Let it break anywhere instead. */
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.meta__tick {
+  color: var(--mint);
+  display: inline-flex;
+}
+
+.meta__sponsored {
+  align-self: flex-start;
+  border-radius: var(--r-chip);
+  background: var(--zest-16);
+  color: var(--zest);
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+}
+
+.meta__caption {
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: var(--ink);
+  margin: 0;
+  max-width: 34ch;
+  text-wrap: pretty;
+
+  /*
+   * The stack is bottom-anchored and grows upward, so at doubled text it
+   * would otherwise run off the top of the post and under the tabs. The
+   * caption is the one elastic item in it: clamping it is what keeps the
+   * handle, the tags and the sound line on screen.
+   */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.meta__tags {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.8125rem;
+}
+
+.meta__sound {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink);
+  font-size: 0.8125rem;
+  min-width: 0;
+}
+
+.meta__sound-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------------------------------------------------------- action rail */
+
+.rail {
+  position: absolute;
+  right: var(--safe);
+  bottom: calc(var(--nav-h) + var(--safe) + env(safe-area-inset-bottom));
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--rail-gap);
+}
+
+.rail__avatar {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--ring);
+  padding: 2px;
+  margin-bottom: 4px;
+}
+
+.rail__avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--surface);
+  display: block;
+}
+
+.rail__avatar-inner > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.rail__follow {
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--pulse);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rail__action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--ink);
+}
+
+.rail__count {
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.rail__action--inert {
+  cursor: default;
+  color: var(--muted);
+}
+
+.rail__action--inert .rail__count {
+  color: var(--muted);
+}
+
+.rail__like--on {
+  color: var(--pulse);
+}
+
+.rail__like--on .rail__count {
+  color: var(--pulse);
+}
+
+.rail__like-glyph {
+  display: inline-flex;
+  transform-origin: 50% 55%;
+}
+
+.rail__like--pop .rail__like-glyph {
+  animation: like-pop 320ms cubic-bezier(0.2, 1.6, 0.35, 1);
+}
+
+@keyframes like-pop {
+  0% {
+    transform: scale(1);
+  }
+  38% {
+    transform: scale(1.45);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.rail__disc {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--ink-16);
+  display: grid;
+  place-items: center;
+  margin-top: 2px;
+}
+
+.rail__disc-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ring);
+}
+
+.rail--spin .rail__disc {
+  animation: spin 7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------------------------------------------------------- bottom nav */
+
+.nav {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 3;
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: var(--surface);
+  border-top: 1px solid var(--ink-08);
+}
+
+.nav__tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex: 1 1 0;
+  height: 100%;
+  color: var(--muted);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.nav__tab--active {
+  color: var(--ink);
+}
+
+/* Inert tabs read as "not this one", never as broken. */
+.nav__tab--inert {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.nav__create {
+  width: 44px;
+  height: 26px;
+  border-radius: var(--r-chip);
+  background: var(--ink-16);
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+/*
+ * Short viewports — the rail clamp.
+ *
+ * The rail is bottom-anchored above the nav and grows upward, so on a
+ * landscape phone the untreated stack (373px) runs off the top of the post
+ * and takes the heart with it: below roughly 340px of height the only
+ * interactive control in the game was off screen entirely (FR-006).
+ *
+ * The clamp is spacing first, then size, then items — in that order. The
+ * order of sacrifice is disc, share, save, comment, avatar. The heart is
+ * never dropped at any viewport.
+ */
+
+@media (max-height: 600px) {
+  .rail {
+    --rail-gap: 14px;
+  }
+
+  .rail__disc {
+    display: none;
+  }
+
+  .meta__caption {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+}
+
+@media (max-height: 460px) {
+  .rail {
+    --rail-gap: 10px;
+  }
+
+  .rail__avatar {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 2px;
+  }
+
+  .rail__action--share {
+    display: none;
+  }
+}
+
+@media (max-height: 400px) {
+  .rail__action--save {
+    display: none;
+  }
+
+  .meta__caption {
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+
+  .meta__tags {
+    display: none;
+  }
+}
+
+@media (max-height: 340px) {
+  .rail__action--comment {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .media--drift .media__art,
+  .rail__like--pop .rail__like-glyph,
+  .rail--spin .rail__disc {
+    animation: none !important;
+  }
+}
+
+/* -------------------------------------------------------------- desktop */
+
+@media (min-width: 720px) {
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    border-left: 1px solid var(--ink-08);
+    border-right: 1px solid var(--ink-08);
+  }
+
+  body {
+    background: var(--void);
+  }
+}
