@@ -1,0 +1,111 @@
+# Infrastructure changes. Plan on a pull request, apply on merge.
+#
+# The apply job targets a protected environment so a human approves any
+# change to the platform, which is the only gate between a typo and a
+# resource group that no longer exists.
+
+name: infra
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'infra/**'
+      - '.github/workflows/infra.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'infra/**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: infra
+  cancel-in-progress: false
+
+env:
+  LOCATION: westeurope
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    # An environment with no protection rules, purely so this job's OIDC
+    # subject is environment-scoped like every other one. A federated
+    # credential with a wildcard subject is decorative (infrastructure
+    # rule 2), and every job here having its own named subject is what
+    # keeps that from happening by accident.
+    environment: plan
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Compile
+        run: az bicep build --file infra/main.bicep
+
+      # Compile above needs no cloud and runs always — it is the real gate on
+      # an infra/ change. Everything below needs the deployment identity, so
+      # it waits for AZURE_CLIENT_ID (owner runbook step 5) instead of failing.
+      - uses: azure/login@v3
+        if: vars.AZURE_CLIENT_ID != ''
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: What-if
+        if: vars.AZURE_CLIENT_ID != ''
+        id: whatif
+        run: |
+          set -euo pipefail
+          az deployment sub what-if \
+            --location "$LOCATION" \
+            --template-file infra/main.bicep \
+            --parameters infra/main.bicepparam \
+            --parameters ciamTenantId='${{ vars.CIAM_TENANT_ID }}' \
+                         apiAudience='${{ vars.API_AUDIENCE }}' \
+                         budgetAlertEmails='["${{ vars.BUDGET_ALERT_EMAIL }}"]' \
+            --result-format FullResourcePayloads \
+            | tee whatif.txt
+
+      - name: Post the plan on the pull request
+        if: github.event_name == 'pull_request' && vars.AZURE_CLIENT_ID != ''
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('whatif.txt', 'utf8').slice(0, 60000);
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '<details><summary>Infrastructure what-if</summary>\n\n```\n' + body + '\n```\n</details>',
+            });
+
+  apply:
+    needs: plan
+    if: github.event_name != 'pull_request' && vars.AZURE_CLIENT_ID != ''
+    runs-on: ubuntu-latest
+    environment: infrastructure
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy
+        run: |
+          set -euo pipefail
+          az deployment sub create \
+            --location "$LOCATION" \
+            --name "infra-${{ github.run_id }}" \
+            --template-file infra/main.bicep \
+            --parameters infra/main.bicepparam \
+            --parameters ciamTenantId='${{ vars.CIAM_TENANT_ID }}' \
+                         apiAudience='${{ vars.API_AUDIENCE }}' \
+                         budgetAlertEmails='["${{ vars.BUDGET_ALERT_EMAIL }}"]'

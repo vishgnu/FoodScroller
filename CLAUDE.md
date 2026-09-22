@@ -4,6 +4,9 @@ Orientation for Claude Code sessions working in this repo. See `README.md`
 for what FoodScroller is and `specs/<n>-<name>/spec.md` (Spec Kit) for the
 current scope baseline. Project principles live in
 `.specify/memory/constitution.md` — the project's single constitution.
+The cloud platform the pipelines run on is specified in
+`docs/platform-guide.md`, with the account owner's steps in
+`docs/platform-handoff.md`; both are unratified, see decision 0011.
 
 ## Lanes
 
@@ -17,7 +20,8 @@ current scope baseline. Project principles live in
   the supported way to adapt one lane; do not fork the kit for it.
 - Lanes this project has overridden or added locally: none yet. Lanes in
   play for the current milestone: `pm`, `engineer`, `game-design`,
-  `graphics`, `art-director`, `tester`, `writer`.
+  `graphics`, `art-director`, `tester`, `writer`, `devops`,
+  `infrastructure` (the last two joined in decision 0011).
 
 ## Agent Orchestration
 
@@ -69,7 +73,11 @@ current scope baseline. Project principles live in
 - Two project-specific rules the linter cannot fully catch:
   colour literals appear in `src/styles/tokens.css` and nowhere else —
   everything else uses `var(--token)`; and nothing is ever written to
-  `localStorage`, `sessionStorage`, IndexedDB, cookies or the network.
+  `localStorage`, `sessionStorage`, IndexedDB or cookies. Browser storage
+  stays off-limits. Network calls are allowed only to the platform API in
+  `docs/platform-guide.md`, and every one must fail soft — the feed stays
+  fully playable with no network and no account (constitution 2.0.0,
+  decision 0012).
 - Source paths by area: app and engine code `src/` (entry `src/main.tsx`);
   content and data `src/feed/` (`types.ts` is the schema, `corpus.ts` is the
   post copy); assets `src/assets/` (`index.ts` is the art registry,
