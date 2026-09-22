@@ -7,6 +7,7 @@
  * an SVG.
  */
 
+import { display } from '../feed/playtest';
 import type { Post } from '../feed/types';
 import { Icon } from './Icon';
 
@@ -23,19 +24,19 @@ export function PostMeta({ post, handleId }: PostMetaProps) {
       {post.sponsored && <span className="meta__sponsored">Sponsored</span>}
 
       <span className="meta__handle" id={handleId}>
-        {post.handle}
+        {display(post.handle)}
         <span className="meta__tick" role="img" aria-label="Verified">
           <Icon name="tick" size={14} />
         </span>
       </span>
 
-      <p className="meta__caption">{post.caption}</p>
+      <p className="meta__caption">{display(post.caption)}</p>
 
       <span className="meta__tags">{post.tags.map((tag) => `#${tag}`).join(' ')}</span>
 
       <span className="meta__sound">
         <Icon name="note" size={14} />
-        <span className="meta__sound-text">{post.sound}</span>
+        <span className="meta__sound-text">{display(post.sound)}</span>
       </span>
     </div>
   );
