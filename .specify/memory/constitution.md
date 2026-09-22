@@ -111,9 +111,11 @@ lanes, interaction states, timing.
 
 ## Technical Constraints
 
-- **Stack**: TypeScript with React, bundled by Vite. No game engine and no
-  backend at this stage. The feed is DOM, not canvas — native scrolling,
-  text layout and accessibility are requirements here, not conveniences.
+- **Stack**: TypeScript with React, bundled by Vite. No game engine. The
+  client is a static bundle; any backend it talks to is the shared platform
+  below, never bespoke per-game server code. The feed is DOM, not canvas —
+  native scrolling, text layout and accessibility are requirements here,
+  not conveniences.
   Pinned: React 18.3.1, react-dom 18.3.1, Vite 5.4.11, TypeScript 5.6.3.
   TypeScript is `strict` plus `noUncheckedIndexedAccess`,
   `exactOptionalPropertyTypes`, `noImplicitOverride`, `noImplicitReturns`,
@@ -128,10 +130,28 @@ lanes, interaction states, timing.
   the *look* can be swapped without rewriting the *process* rules.
 - **Audio tooling**: [not decided — the `sound` lane is not in play. Decide
   when it is, and copy its guide at the same time.]
-- **Runtime/deployment**: static single-page app. No backend, no network
-  requests at runtime, no accounts, no analytics. All state is in memory
-  for the current session only — nothing is written to storage of any kind.
-  Deploy target is `devops`'s to decide and that lane is not yet in play.
+- **Runtime/deployment**: static single-page app. The game's own code and art
+  MUST stay deployable as static files — no server-side rendering, and no
+  per-game server. Beyond that bundle the app MAY use the shared platform
+  specified in `docs/platform-guide.md`: player sign-in against a consumer
+  identity tenant, one serverless API shared across games, player-save and
+  large-asset storage reached through that API, and telemetry. Four rules
+  bind that use and are not negotiable per feature:
+  - **Free tier is the budget.** Every service MUST sit inside a free grant
+    that covers this workload permanently. Leaving it is a recorded decision
+    with a number, never a convenience.
+  - **No stored credentials.** The API reaches storage as a managed identity
+    and CI authenticates by workload identity federation. No connection
+    string, secret or real identifier enters this repository.
+  - **Everything additive fails soft.** The feed MUST remain fully playable
+    with no network and no account. Sign-in, saves and telemetry are
+    additive: each MUST degrade to the signed-out in-memory experience
+    rather than blocking, erroring or gating content.
+  - **Telemetry is bounded.** It MUST record no post content, no dwell or
+    engagement trace, and nothing identifying a player beyond what an
+    explicit opt-in covers. A satire of engagement instrumentation does not
+    get to instrument engagement.
+  Deploy target within that platform is `devops`'s to settle.
 - **Other hard constraints**: mobile-first browser, reference viewport
   **390×844**, must remain usable with mouse and keyboard on desktop.
   Performance budget: scrolling after 200 posts is indistinguishable from
@@ -172,4 +192,4 @@ Development Workflow section above. Compliance is reviewed the same way any
 lane's output is reviewed — against this document and the repo's existing
 conventions, not reviewer preference.
 
-**Version**: 1.0.2 | **Ratified**: 2026-09-21 | **Last Amended**: 2026-09-22
+**Version**: 2.0.0 | **Ratified**: 2026-09-21 | **Last Amended**: 2026-09-22

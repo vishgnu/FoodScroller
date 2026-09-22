@@ -73,7 +73,11 @@ The cloud platform the pipelines run on is specified in
 - Two project-specific rules the linter cannot fully catch:
   colour literals appear in `src/styles/tokens.css` and nowhere else —
   everything else uses `var(--token)`; and nothing is ever written to
-  `localStorage`, `sessionStorage`, IndexedDB, cookies or the network.
+  `localStorage`, `sessionStorage`, IndexedDB or cookies. Browser storage
+  stays off-limits. Network calls are allowed only to the platform API in
+  `docs/platform-guide.md`, and every one must fail soft — the feed stays
+  fully playable with no network and no account (constitution 2.0.0,
+  decision 0012).
 - Source paths by area: app and engine code `src/` (entry `src/main.tsx`);
   content and data `src/feed/` (`types.ts` is the schema, `corpus.ts` is the
   post copy); assets `src/assets/` (`index.ts` is the art registry,
