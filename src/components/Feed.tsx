@@ -43,13 +43,35 @@ export function Feed() {
       ?.focus({ preventScroll: true });
   }, [feed.active]);
 
+  /*
+   * `setActive` is stable across renders, so `measure` and `onScroll` are
+   * too — which is what lets the resize listener below be registered once
+   * instead of on every frame of a scroll.
+   */
+  const { setActive } = feed;
+
   const measure = useCallback(() => {
     const element = container.current;
     if (!element) return;
     const height = element.clientHeight;
     if (height === 0) return;
-    feed.setActive(Math.max(0, Math.round(element.scrollTop / height)));
-  }, [feed]);
+    setActive(Math.max(0, Math.round(element.scrollTop / height)), height);
+  }, [setActive]);
+
+  /**
+   * Grow the lookahead ahead of the scroll, not inside its handler (issue
+   * #9). The headroom a fling needs is sized from the viewport height, so
+   * the feed has to be told that height before the first fling — at mount,
+   * and again whenever the viewport changes size or orientation. By the time
+   * a scroll handler runs the browser has already clamped the scroll.
+   */
+  useEffect(() => {
+    measure();
+    window.addEventListener('resize', measure);
+    return () => {
+      window.removeEventListener('resize', measure);
+    };
+  }, [measure]);
 
   const onScroll = useCallback(() => {
     if (frame.current !== 0) return;

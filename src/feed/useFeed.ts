@@ -24,11 +24,39 @@ import type { Post, SessionState } from './types';
 export const RETAINED = 200;
 
 /**
- * How far ahead of the active post the feed is generated. Two forces set it:
- * too small and a fling finds nothing there, too large and an engagement
- * cannot be answered inside five posts because five posts already exist.
+ * How far ahead of the active post the feed is generated — the headroom a
+ * fling has.
+ *
+ * The scroll range *is* the generated range, so running out of it clamps the
+ * scroll at `scrollHeight - clientHeight`: the momentum is gone and the feed
+ * arrests at the generated bottom (issue #9). Growing inside the scroll
+ * handler cannot rescue that, because the browser clamps as it applies the
+ * scroll, which is before any handler of ours runs. The headroom has to
+ * already be there, which is why it is grown ahead of the scroll instead —
+ * at mount, on resize, and on every post the player passes.
+ *
+ * It is sized in pixels rather than posts, because a fling is a pixel
+ * quantity and a post is one viewport: the same 40-notch wheel burst
+ * (~9,600px) is 12 posts on a 844px-tall phone and 32 on a 300px-tall
+ * landscape one. The budget is twice the burst that filed the defect.
+ *
+ * The lookahead is spent out of RETAINED, so every post of headroom is a
+ * post the player can no longer scroll back to: 175 posts of history at
+ * 844px tall, 132 at the shortest viewport. Both are far past anything the
+ * success criteria measure.
  */
-const LOOKAHEAD = 8;
+export const FLING_HEADROOM_PX = 20_000;
+/** Floor, for a viewport tall enough that the pixel budget asks for less. */
+export const LOOKAHEAD_MIN = 16;
+/** Ceiling, so the shortest viewport cannot eat the retained history. */
+export const LOOKAHEAD_MAX = 72;
+
+/** Posts of headroom for a viewport this many CSS pixels tall. */
+export function lookaheadFor(viewport: number): number {
+  if (!(viewport > 0)) return LOOKAHEAD_MIN;
+  const posts = Math.ceil(FLING_HEADROOM_PX / viewport);
+  return Math.min(LOOKAHEAD_MAX, Math.max(LOOKAHEAD_MIN, posts));
+}
 
 /** Rendered window: active ± this. Everything else is a gap in the spacer. */
 export const RENDER_RADIUS = 3;
@@ -41,10 +69,12 @@ interface FeedState {
   session: SessionState;
   /** Absolute index of the post filling the viewport. */
   active: number;
+  /** Posts of headroom to keep ahead of `active`, sized for the viewport. */
+  lookahead: number;
 }
 
 function grow(state: FeedState, seed: number): FeedState {
-  const wanted = state.active + LOOKAHEAD;
+  const wanted = state.active + state.lookahead;
   if (state.released + state.served.length > wanted) return state;
 
   const served = [...state.served];
@@ -73,7 +103,12 @@ export interface FeedView {
   engaged: ReadonlySet<string>;
   /** The post at an absolute index, or undefined if it has been released. */
   at: (index: number) => Post | undefined;
-  setActive: (index: number) => void;
+  /**
+   * The post filling the viewport, and how tall that viewport is. The height
+   * is what sizes the lookahead, so passing it on mount and on resize is how
+   * the headroom exists before the first fling rather than after it.
+   */
+  setActive: (index: number, viewport: number) => void;
   toggle: (post: Post) => void;
 }
 
@@ -83,18 +118,37 @@ export function useFeed(): FeedView {
   const seed = useRef(Math.floor(Math.random() * 0x7fffffff)).current;
 
   const [state, setState] = useState<FeedState>(() =>
-    grow({ served: [], released: 0, session: INITIAL_STATE, active: 0 }, seed),
+    grow(
+      {
+        served: [],
+        released: 0,
+        session: INITIAL_STATE,
+        active: 0,
+        lookahead: LOOKAHEAD_MIN,
+      },
+      seed,
+    ),
   );
 
   const setActive = useCallback(
-    (index: number) => {
+    (index: number, viewport: number) => {
       setState((previous) => {
-        if (index === previous.active) return previous;
+        const lookahead = lookaheadFor(viewport);
+        // Nothing moved and the viewport is the same size: grow() alone,
+        // which returns the state it was given when there is nothing to add,
+        // so an unchanged feed does not re-render.
+        if (index === previous.active && lookahead === previous.lookahead) {
+          return grow(previous, seed);
+        }
         return grow(
           {
             ...previous,
             active: index,
-            session: markSeen(previous.session, index + 1),
+            lookahead,
+            session:
+              index === previous.active
+                ? previous.session
+                : markSeen(previous.session, index + 1),
           },
           seed,
         );
