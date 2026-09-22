@@ -1,0 +1,130 @@
+# Build, verify, and deploy one game to its free static site.
+#
+# No cloud credential is stored in this repository. The workflow signs in
+# with a federated credential (OIDC), then fetches the site's deployment
+# token just-in-time and masks it. The token exists for the length of the
+# job and is never a repository secret.
+#
+# AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID are repository
+# *variables*, not secrets: they are identifiers, not credentials. They are
+# variables rather than literals here because infrastructure rule 5 keeps
+# real identifiers out of the repo.
+
+name: game
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'infra/**'
+      - 'api/**'
+      - 'docs/**'
+      - '**.md'
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: game-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Match modules/game.bicep's naming: stapp-<project>-<game>-<environment>
+  STATIC_SITE_NAME: stapp-aigames-foodscroller-prod
+  AZURE_RESOURCE_GROUP: rg-aigames-foodscroller-prod
+  APP_LOCATION: .
+  OUTPUT_LOCATION: dist
+
+jobs:
+  verify:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: game-build
+          path: ${{ env.OUTPUT_LOCATION }}
+          retention-days: 1
+
+  deploy:
+    needs: verify
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: game-build
+          path: ${{ env.OUTPUT_LOCATION }}
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Fetch deployment token just-in-time
+        id: swa
+        run: |
+          set -euo pipefail
+          token=$(az staticwebapp secrets list \
+            --name "$STATIC_SITE_NAME" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --query "properties.apiKey" -o tsv)
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
+      - uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ steps.swa.outputs.token }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: upload
+          app_location: ${{ env.APP_LOCATION }}
+          output_location: ${{ env.OUTPUT_LOCATION }}
+          skip_app_build: true
+          skip_api_build: true
+
+  # Pre-production environments are capped on the free tier. Without this
+  # job the cap fills up and deploys start failing with an error that does
+  # not mention the cap.
+  close-preview:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Fetch deployment token just-in-time
+        id: swa
+        run: |
+          set -euo pipefail
+          token=$(az staticwebapp secrets list \
+            --name "$STATIC_SITE_NAME" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --query "properties.apiKey" -o tsv)
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
+      - uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ steps.swa.outputs.token }}
+          action: close
