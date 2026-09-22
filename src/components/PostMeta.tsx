@@ -7,6 +7,7 @@
  * an SVG.
  */
 
+import { memo } from 'react';
 import { display } from '../feed/playtest';
 import type { Post } from '../feed/types';
 import { Icon } from './Icon';
@@ -18,7 +19,8 @@ export interface PostMetaProps {
   handleId: string;
 }
 
-export function PostMeta({ post, handleId }: PostMetaProps) {
+/** Memoised for the same reason as the media layer — see `PostCard`. */
+export const PostMeta = memo(function PostMeta({ post, handleId }: PostMetaProps) {
   return (
     <div className="meta">
       {post.sponsored && <span className="meta__sponsored">Sponsored</span>}
@@ -40,4 +42,4 @@ export function PostMeta({ post, handleId }: PostMetaProps) {
       </span>
     </div>
   );
-}
+});

@@ -10,6 +10,7 @@
  * is nothing to load: every illustration is inline vector.
  */
 
+import { memo, useCallback } from 'react';
 import { artFor } from '../assets/index';
 import type { Post } from '../feed/types';
 import { ActionRail } from './ActionRail';
@@ -68,18 +69,63 @@ function StandIn({ artId }: { artId: string }) {
   );
 }
 
+/**
+ * The media layer, split out of the card and memoised.
+ *
+ * `active` flips on two cards at every post boundary, and re-rendering a
+ * card otherwise means React walks the illustration's ~150 SVG nodes again
+ * to discover that none of them changed. The art depends on nothing but the
+ * artId, so the drift class stays on the wrapper the card owns and the
+ * illustration is diffed once, when the post mounts (issue #12).
+ */
+const Media = memo(function Media({ artId }: { artId: string }) {
+  const entry = artFor(artId);
+  return (
+    <div className="media__art">
+      {entry ? <entry.Component /> : <StandIn artId={artId} />}
+    </div>
+  );
+});
+
 export interface PostCardProps {
   post: Post;
   index: number;
   engaged: boolean;
   /** Drift is only worth paying for on the post actually being looked at. */
   active: boolean;
-  onToggle: () => void;
+  /**
+   * Takes the post, so the feed can hand every card the same stable function
+   * instead of a fresh closure per render — see the memo note below.
+   */
+  onToggle: (post: Post) => void;
 }
 
-export function PostCard({ post, index, engaged, active, onToggle }: PostCardProps) {
-  const entry = artFor(post.artId);
+/**
+ * Memoised, and this is load-bearing rather than tidiness.
+ *
+ * Passing a post changes the feed's state, so every card in the rendered
+ * window re-renders — and a card is a parametric illustration of a few
+ * hundred SVG nodes. Diffing seven of those at every post boundary is a
+ * long frame, and it lands exactly where the player is mid-swipe: a hitch
+ * once per post, felt on a phone, invisible to a frame-time sample taken
+ * while scrolling programmatically (issue #12).
+ *
+ * With this, only the cards whose props actually changed re-render — the one
+ * gaining `active` and the one losing it, and the one that was just engaged.
+ * That depends on every prop being stable, which is why `onToggle` takes the
+ * post instead of being a closure over it.
+ */
+export const PostCard = memo(function PostCard({
+  post,
+  index,
+  engaged,
+  active,
+  onToggle,
+}: PostCardProps) {
   const handleId = `post-${post.id}-handle`;
+  const toggle = useCallback(() => {
+    onToggle(post);
+  }, [onToggle, post]);
 
   return (
     <article
@@ -93,15 +139,13 @@ export function PostCard({ post, index, engaged, active, onToggle }: PostCardPro
       aria-setsize={-1}
     >
       <div className={`media${active ? ' media--drift' : ''}`}>
-        <div className="media__art">
-          {entry ? <entry.Component /> : <StandIn artId={post.artId} />}
-        </div>
+        <Media artId={post.artId} />
       </div>
 
       <div className="scrim" />
 
       <PostMeta post={post} handleId={handleId} />
-      <ActionRail post={post} engaged={engaged} active={active} onToggle={onToggle} />
+      <ActionRail post={post} engaged={engaged} active={active} onToggle={toggle} />
     </article>
   );
-}
+});
