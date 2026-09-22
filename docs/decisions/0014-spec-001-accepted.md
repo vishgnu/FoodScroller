@@ -1,4 +1,6 @@
-# 0011: Spec 001 accepted on an informal playtest
+# 0014: Spec 001 accepted on an informal playtest
+
+*Renumbered from 0011 — see 0013 for why.*
 
 Date: 2026-09-22
 Status: decided

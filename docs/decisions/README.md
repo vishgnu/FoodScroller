@@ -48,3 +48,23 @@ What was decided.
 
 What this rules in/out, or what it costs.
 ```
+
+## Numbering when more than one lane is running
+
+Sequential numbering assumes one writer. It does not survive two — on
+2026-09-22 two parallel sessions both took `0010`, and both landed on
+`main`, because each picked "the next number" from a tree that did not yet
+contain the other's entry.
+
+The duplicate is now `0013`; `0010` is the overlay-registry entry. Two
+conventions follow, and they cost nothing:
+
+1. **Pick the next number against `origin/main`, not your branch** — fetch
+   first. A number chosen from a stale tree is a number someone else has.
+2. **If you collide, renumber the entry nothing else cites yet.** Whichever
+   one `CLAUDE.md`, a spec, or another decision already points at stays
+   put; the other moves. Renumbering a cited entry turns one clash into
+   several dead links.
+
+A number is an address. Two files at one address is a broken record, not a
+cosmetic problem.
