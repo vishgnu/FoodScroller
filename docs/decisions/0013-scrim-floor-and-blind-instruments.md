@@ -1,4 +1,9 @@
-# 0010: A proportional scrim was the wrong specification, and our instruments were blind
+# 0013: A proportional scrim was the wrong specification, and our instruments were blind
+
+*Renumbered from 0010. Another lane, working in parallel, took 0010 and 0011
+for the overlay registry and the platform while this entry was in flight, and
+`CLAUDE.md` now cites 0011 for the platform. Renumbered on this side because
+theirs is already cross-referenced and mine was not.*
 
 Date: 2026-09-22
 Status: decided
