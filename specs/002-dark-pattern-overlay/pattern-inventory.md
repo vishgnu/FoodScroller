@@ -32,7 +32,7 @@ merged tree at `e0f3c6a`. Re-check rather than trust.
 
 | # | Pattern | Status | Evidence | Anchor |
 |---|---|---|---|---|
-| 1 | Infinite scroll, no stopping cue | shipped | `useFeed.ts:76-95` (`grow()` unbounded); `generator.ts:259-327` (`serveNext` always returns; L316 has no escape hatch); `Feed.tsx:97-101,126-129` (spacer `total * 100dvh`, no end marker) | `.feed` / `.feed__spacer` |
+| 1 | Infinite scroll, no stopping cue | shipped | `useFeed.ts:76-95` (`grow()` unbounded); `generator.ts:259-327` (`serveNext` always returns; L316 has no escape hatch); `Feed.tsx:118-131,156-159` (spacer `total * 100dvh`, no end marker) | `.feed` / `.feed__spacer` |
 | 2 | "Variable reward" | shipped, **misnamed** | see below | `.rail__like` (trigger) + post sequence (payoff) |
 | 3 | Inflated social proof | shipped | `ActionRail.tsx:19-24` (`count()`), `:30-34` (`DERIVED` fabricates comment/save/share from `baseLikes`), `:99`, `:109`; `types.ts:46-47` "displayed, never simulated" | `.rail__count` |
 | 4 | Engagement-shaped feed response | shipped | `generator.ts:355-368` (`toggleEngagement` pushes tapped tag into `affinity`), `:163-237` (bias), `:34-37` (`RESPONSE_WINDOW=5`, `RESPONSE_MIN=2`); `useFeed.ts:160-182` | **none** — see anchor kinds |
@@ -41,7 +41,7 @@ merged tree at `e0f3c6a`. Re-check rather than trust.
 
 "Variable reward" implies a variable payout on the tap. The tap's payout
 is **deterministic every time**: the heart fills and pops on every press
-(`ActionRail.tsx:54-67`, `.rail__like--pop` in `global.css:439-442`).
+(`ActionRail.tsx:54-67`, `.rail__like--pop` in `global.css:453-457`).
 
 What is actually variable is *when* the engagement's payoff arrives — a
 response is guaranteed inside a five-post window but lands on a
@@ -61,17 +61,17 @@ the artifact's entire claim is that it explains what it is doing to you.
 
 | Pattern | Evidence | Anchor |
 |---|---|---|
-| Mandatory snap removes the "where do I stop" decision | `global.css:118-119` (`scroll-snap-type: y mandatory`), `:143-151` (`scroll-snap-stop: always`); `Feed.tsx:130-137` | `.feed`, `.snap` |
-| Ambient media drift — the screen stays alive while the player is still | `global.css:194-207` (18s `drift` loop); `PostCard.tsx:95` (active only) | `.media--drift .media__art` |
-| Spinning disc implying audio that never plays | `ActionRail.tsx:113-115`; `global.css:473-476` (7s `spin`); `PostMeta.tsx:37-40` | `.rail__disc`, `.meta__sound` |
+| Mandatory snap removes the "where do I stop" decision | `global.css:118-119` (`scroll-snap-type: y mandatory`), `:143-151` (`scroll-snap-stop: always`); `Feed.tsx:121-128,160` | `.feed`, `.snap` |
+| Ambient media drift — the screen stays alive while the player is still | `global.css:194-207` (18s `drift` loop); `PostCard.tsx:141` (active only) | `.media--drift .media__art` |
+| Spinning disc implying audio that never plays | `ActionRail.tsx:113-115`; `global.css:488-491` (7s `spin`); `PostMeta.tsx:39-42` | `.rail__disc`, `.meta__sound` |
 | Inert comment/save/share — false affordances that still carry counts | `ActionRail.tsx:102-111` (`rail__action--inert`) | `.rail__action--inert` |
 | Decorative "Follow" `+` that does nothing | `ActionRail.tsx:71-79` | `.rail__follow` |
-| Unearned "Verified" tick on every handle | `PostMeta.tsx:28-30` | `.meta__tick` |
+| Unearned "Verified" tick on every handle | `PostMeta.tsx:30-32` | `.meta__tick` |
 | Decoy navigation — 4/5 bottom items and 1/2 top tabs permanently inert, so exploration always leads nowhere without ever visibly failing | `BottomNav.tsx:20-30`, `TopTabs.tsx:12-14` | `.nav__tab--inert`, `.toptabs__tab--inert` |
 | No timestamps anywhere — no elapsed-time or session-duration cue | no time field in `types.ts:33-50`, `corpus.ts`, or any component | **none** — absence |
 | Opaque personalization — `affinity`/`seen` steer the feed, never surfaced | `types.ts:58-65`; `progression-spec.md:44-51` | **none** — absence |
 
-**Not a dark pattern:** sponsored posts *are* labelled (`PostMeta.tsx:24`).
+**Not a dark pattern:** sponsored posts *are* labelled (`PostMeta.tsx:26`).
 That is honest disclosure. Do not register it as a pattern; registering
 honest behaviour as manipulation would discredit the ones that are real.
 
@@ -90,20 +90,33 @@ The absence cases are the two most worth teaching and the two hardest to
 point at. Getting them out of the contract because they are awkward
 would be the registry quietly excusing itself from its own rule.
 
-## Anchoring has no infrastructure yet
+## Anchoring has almost no infrastructure yet
 
-There are **zero `data-*` attributes** anywhere in `src/`. What exists is
-a consistent BEM-ish class vocabulary that a registry could target today
-by selector — fragile, since a style rename would silently unbind a label,
-and style-only classes could match by accident. Stable anchoring most
-plausibly means new `data-pattern="..."` markup at each manifestation
-point.
+**Correction, same day:** an earlier revision of this note claimed there
+are zero `data-*` attributes in `src/`. That was wrong when written.
+`src/assets/art/Composition.tsx:67,72` carries `data-layer="field"` and
+`data-layer="subject"`, documented at `:7`. Two, not zero.
 
-**That work lands in `src/components/Feed.tsx`, `src/feed/useFeed.ts` and
-`src/styles/global.css`** — the three files carrying another session's
-in-flight work on #9, #11 and a reported scroll hitch. Spec and plan can
-proceed; anchoring waits for that PR. This is the collision the
-roster/phase handover on #7 flagged, and it is real.
+The conclusion survives the correction but the reasoning changes. No
+`data-pattern` anchor exists and there is nothing a registry can bind to
+today, so stable anchoring still means new markup. What is different is
+that `data-*` is already an established convention here rather than
+something phase 2 introduces — `data-layer` is the precedent to follow,
+not a pattern to invent.
+
+Otherwise what exists is a consistent BEM-ish class vocabulary a registry
+could target by selector — fragile, since a style rename would silently
+unbind a label and style-only classes could match by accident.
+
+**Anchoring is no longer blocked.** An earlier revision said it waited on
+in-flight work in `Feed.tsx`, `useFeed.ts` and `global.css`. That landed
+in #16. Every citation above was re-verified against the merged tree:
+seven moved, no mechanism changed, no new pattern arrived, and the
+thirteen still stand.
+
+**CI now exists.** `.github/workflows/game-ci.yml` runs `npm ci` → `lint`
+→ `typecheck` → `test` → `build` on every push to `main` and every PR
+touching `src/`. Phase 1's gates were hand-run; phase 2's are not.
 
 ## Carried into `specify`
 
@@ -112,4 +125,10 @@ roster/phase handover on #7 flagged, and it is real.
 3. Anchor kinds: element / temporal / absence, in the contract from the start.
 4. #10 (the `+1` invisible at millions) is plausibly this overlay's *subject*
    rather than a bug — open scope call.
-5. Anchoring is blocked on the in-flight PR touching the three files above.
+5. Anchoring follows the existing `data-layer` precedent in `Composition.tsx`.
+6. #13 — one dropped frame per post boundary — is postponed by the owner
+   until infra exists. The overlay must not add work to the post-boundary
+   path without measuring it; the known residue is already at the threshold.
+7. 0014 carries a recommendation into this phase: run the real SC-006
+   playtest with strangers **before phase 2 ships**. If the feed does not
+   compel, the overlay is labelling a loop that does not exist.
