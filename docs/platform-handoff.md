@@ -155,13 +155,21 @@ There are no repository secrets. If one appears, something regressed.
 
 ## 6. First deployment
 
+The three parameters that must never live in the repo are passed on the
+command line, exactly as `.github/workflows/infra.yml` passes them. Without
+these overrides the bracketed placeholders in `main.bicepparam` reach Azure
+as literal strings.
+
 ```
 az bicep build --file infra/main.bicep
 
 az deployment sub what-if \
   --location [REGION] \
   --template-file infra/main.bicep \
-  --parameters infra/main.bicepparam
+  --parameters infra/main.bicepparam \
+  --parameters ciamTenantId='[CIAM_TENANT_ID]' \
+               apiAudience='api://[GAME_CLIENT_ID]' \
+               budgetAlertEmails='["[YOUR_ALERT_EMAIL]"]'
 ```
 
 Read the what-if output before applying. Then either merge a change under
@@ -172,7 +180,10 @@ az deployment sub create \
   --location [REGION] \
   --name bootstrap \
   --template-file infra/main.bicep \
-  --parameters infra/main.bicepparam
+  --parameters infra/main.bicepparam \
+  --parameters ciamTenantId='[CIAM_TENANT_ID]' \
+               apiAudience='api://[GAME_CLIENT_ID]' \
+               budgetAlertEmails='["[YOUR_ALERT_EMAIL]"]'
 ```
 
 - [ ] Add the resulting static site hostnames to the game registration's
