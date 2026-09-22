@@ -63,7 +63,11 @@ jobs:
 
   deploy:
     needs: verify
-    if: github.event.action != 'closed'
+    # Gated on the deployment identity existing. Until AZURE_CLIENT_ID is set
+    # as a repository variable (owner runbook step 5) there is nothing to sign
+    # in as, so this job skips rather than failing at azure/login. It starts
+    # running by itself the moment the variable appears — no edit needed.
+    if: github.event.action != 'closed' && vars.AZURE_CLIENT_ID != ''
     runs-on: ubuntu-latest
     environment: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
     steps:
@@ -104,8 +108,20 @@ jobs:
   # job the cap fills up and deploys start failing with an error that does
   # not mention the cap.
   close-preview:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    # Gated on the deployment identity existing. Until AZURE_CLIENT_ID is set
+    # as a repository variable (owner runbook step 5) there is nothing to sign
+    # in as, so this job skips rather than failing at azure/login. It starts
+    # running by itself the moment the variable appears — no edit needed.
+    if: >-
+      github.event_name == 'pull_request'
+      && github.event.action == 'closed'
+      && vars.AZURE_CLIENT_ID != ''
     runs-on: ubuntu-latest
+    # The owner runbook registers four federated credentials, all scoped to
+    # an environment subject. A job with no environment authenticates under a
+    # ref subject instead, which matches none of them — so this one names the
+    # environment it is tearing down.
+    environment: preview
     steps:
       - uses: azure/login@v2
         with:
