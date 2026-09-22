@@ -1,5 +1,5 @@
 /*
- * Design tokens — art-style-guide.md v1 "Doomfeed".
+ * Design tokens — art-style-guide.md v1.1 "Doomfeed".
  *
  * THIS IS THE ONLY FILE IN THE REPOSITORY WHERE A COLOUR LITERAL MAY APPEAR.
  * Every component and every asset references var(--…). A raw hex anywhere
@@ -42,6 +42,25 @@
   --safe: 16px; /* UI keeps 16px from the viewport edge */
   --nav-h: 56px; /* bottom tab bar height */
   --rail-gap: 22px; /* action rail spacing */
+
+  /*
+   * Scrim floor (art guide v1.1, "UI and icons").
+   *
+   * The scrim's proportional third protects the caption stack only on a tall
+   * viewport: a third of 844px is 281px and covers it, a third of 300px is
+   * 100px and does not. The stack does not shrink in proportion — it has a
+   * floor — so the scrim gets one too, in absolute units, and takes
+   * whichever of the two is greater.
+   *
+   * --scrim-hold is the band held at full strength: the stack's own offset
+   * (nav bar + safe area) plus the tallest the stack gets at its floor,
+   * measured at 212px across the six viewports the build is checked at. In
+   * rem, so it grows with the stack when the player enlarges text.
+   * --scrim-min adds the run-up the gradient needs to reach 0 without a
+   * visible edge.
+   */
+  --scrim-hold: calc(var(--nav-h) + var(--safe) + 11rem); /* 248px at a 16px root */
+  --scrim-min: calc(var(--scrim-hold) + 4rem);
 
   /* --- typography: the system UI stack, never a display face --- */
   --font-ui:

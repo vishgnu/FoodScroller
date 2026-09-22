@@ -207,9 +207,18 @@ button {
 }
 
 /*
- * Scrim (art guide, UI section): bottom-up void gradient 0% -> 70% over the
- * lower third, plus a right-edge vignette at 40%. This is what makes the
- * "ink holds 4.5:1 over any post" rule enforceable.
+ * Scrim (art guide v1.1, UI section): bottom-up void gradient 0% -> 70% over
+ * the lower third or the caption stack's own footprint, whichever is
+ * greater, plus a right-edge vignette at 40%. This is what makes the "ink
+ * holds 4.5:1 over any post" rule enforceable.
+ *
+ * The proportional third alone is not enough, and that is the whole point of
+ * the floor: on a 300px-tall landscape phone a third is 100px while the
+ * caption stack still needs 146px, so the handle sat on unprotected art and
+ * measured 1:1 against an `ink`-white illustration (issue #11). The gradient
+ * reaches full strength by --scrim-hold and fades out above it, because a
+ * ramp that is still near zero where the text starts protects nothing —
+ * covering the stack is not the same as covering it with anything.
  */
 .scrim {
   position: absolute;
@@ -220,8 +229,14 @@ button {
 .scrim::before {
   content: '';
   position: absolute;
-  inset: 66% 0 0 0;
-  background: linear-gradient(to top, var(--void-70), var(--void-0));
+  inset: auto 0 0 0;
+  height: max(34%, var(--scrim-min));
+  background: linear-gradient(
+    to top,
+    var(--void-70) 0,
+    var(--void-70) var(--scrim-hold),
+    var(--void-0) 100%
+  );
 }
 
 .scrim::after {

@@ -1,4 +1,4 @@
-# Art style guide — v1 "Doomfeed"
+# Art style guide — v1.1 "Doomfeed"
 
 This is the canonical spec for FoodScroller's visual identity — what a
 post, an avatar, or an icon has to look like to belong in this game. It is
@@ -9,7 +9,7 @@ purpose: this doc is the swappable part.
 wins for anything about *how the art should look*; the agent definition
 wins for *where files live* and *what tooling is allowed*.
 
-Status: **current style** (v1.0.1 — icon location corrected) — arrived at from the user's direction ("a mix
+Status: **current style** (v1.1 — scrim floor made absolute) — arrived at from the user's direction ("a mix
 of YouTube Shorts, TikTok and Insta, so addicted teens relate") read
 against Constitution Principle I. The canonical reference assets are the
 hero post illustration and the icon set in `src/assets/`.
@@ -114,9 +114,14 @@ layers: subject and flat field. No horizon, no perspective, no
 atmospheric depth.
 
 The foreground rule that matters: **UI must hold contrast against any
-post.** Every post illustration must keep its bottom-left third and
-right edge visually quiet enough that `ink` text and icons stay legible
-over them, or carry the scrim defined in the UI section.
+post.** The area to keep quiet is the one the caption stack and the action
+rail actually occupy, not a proportion of the screen: a "bottom-left third"
+is a different area on a 390×844 phone than on a 740×300 landscape one, and
+on the short one it stops below the handle. Every post illustration must
+keep that area — the stack's own footprint, and the right edge — visually
+quiet enough that `ink` text and icons stay legible over it, or carry the
+scrim defined in the UI section. In practice the scrim is what carries it,
+which is why the scrim's floor is absolute and not a fraction.
 
 ## UI and icons
 
@@ -130,8 +135,18 @@ over them, or carry the scrim defined in the UI section.
   one scale pop. Disabled is `muted` at 40% and does not appear in this
   phase.
 - **Scrim**: any UI over media sits on a bottom-up `void` gradient, 0% to
-  70%, covering the lower third, and a right-edge vignette at 40%. This
-  is what makes the contrast rule above enforceable.
+  70%, and a right-edge vignette at 40%. The gradient covers **the lower
+  third, or the caption stack's own footprint, whichever is greater.** A
+  third is proportional and the caption stack is not — it has a floor it
+  does not shrink past — so on a short landscape screen a third is 100px of
+  protection under a stack that still needs 146px. The absolute floor is
+  the stack's offset from the bottom edge (the tab bar plus the safe area)
+  plus the stack's height at its own minimum, stated in text-relative units
+  so that it grows when the player enlarges text. Inside that floor the
+  gradient is at its full 70% and fades to 0% above it: a ramp still near
+  zero where the text begins protects nothing, so *covering* the stack and
+  covering it *with something* are two requirements, and the floor means
+  both. This is what makes the contrast rule above enforceable.
 - **Relationship to the art**: deliberately separate. The UI is crisp,
   systemic and cold; the food is warm and hand-drawn. That tension is the
   joke — the interface is not on the food's side.
