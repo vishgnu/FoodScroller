@@ -24,6 +24,8 @@ A player is scrolling, and something on screen is working on them — the count 
 2. **Given** the player has read an explanation, **When** they dismiss the overlay, **Then** it closes in a single action, with no guilt-worded prompt, no confirmation, and no later reappearance they did not ask for.
 3. **Given** the player has used the overlay, **When** they return to scrolling, **Then** the feed serves exactly what it would have served had they never opened it.
 4. **Given** one thing on screen carries two mechanics, **When** the player uses the overlay on it, **Then** both are shown, each explained separately.
+5. **Given** the player has scrolled past the 50th post without opening the overlay, **When** they reach the fixed point in the feed, **Then** the game offers the overlay once, as a post among the others.
+6. **Given** the offer is on screen, **When** the player simply keeps scrolling, **Then** nothing else happens — no prompt, no block, and the offer is never served again.
 
 ---
 
@@ -98,6 +100,8 @@ Phase 1's post copy was deliberately placeholder and marked as such (spec 001, F
 - **Mechanics hidden from assistive technology.** Several mechanics live on elements deliberately hidden from assistive technology — the inert comment, save and share actions, the decorative follow button, the spinning disc. A screen-reader user never encounters them as elements. Their explanations must still be reachable, and must make sense to someone who cannot perceive the thing described.
 - **Mechanics switched off for this player.** When the device requests reduced motion, the ambient drift, the like pop and the disc spin are disabled. The overlay may still explain them, but must not present them as currently happening.
 - **The narrowest viewports.** Phase 1's caption contrast read 1.00:1 at five of six viewports and passed every check, because every check measured the one viewport where it passed (decision 0013). Overlay text is text over the feed and inherits exactly this risk.
+- **Scrolling back to the offer.** The offer is a post, so it stays in scroll-back history like any other (spec 001, FR-012). Seeing it again that way is history, not a second offer.
+- **Two players, different behaviour.** A player who taps everything and one who taps nothing meet the offer at the same point. If they did not, the offer would be measuring them.
 - **A player who never opens the overlay.** They must get phase 1's game, unchanged. Nothing may wait on the overlay being used.
 - **Honest disclosure.** The sponsored label is honest. Cataloguing it as manipulation would discredit the entries that are real.
 - **Enlarged text.** Explanations are the longest text in the game. They must reflow rather than clip.
@@ -117,10 +121,10 @@ Phase 1's post copy was deliberately placeholder and marked as such (spec 001, F
 
 **The overlay**
 
-- **FR-007**: The player MUST be able to reach the explanation of any catalogued mechanic from where they encounter it. How the player comes to the overlay: [NEEDS CLARIFICATION: invocation model — is it always present, a control the player finds, or something the game offers? Each answer places the seam differently, and one of them may itself be a dark pattern.]
+- **FR-007**: The player MUST be able to reach the explanation of any catalogued mechanic from where they encounter it, through a control that is always available and never draws attention to itself. In addition, the game MUST offer the overlay **exactly once per session, as a post in the feed**, at a fixed point in the feed's sequence after the 50th post (decision 0015). The offer MUST arrive at the same point for every player: nothing about how the player behaves may decide whether or when it arrives. Scrolling past it is the whole of dismissing it, and it MUST NOT be served again. Its exact position is `game-design`'s.
 - **FR-008**: The overlay MUST NOT itself use any manipulative mechanic: dismissal is one action, with no guilt-worded prompt, no confirmation, no repeated prompting after dismissal, and nothing obstructing closure. A teaching layer built from what it teaches would be the satire consuming itself.
 - **FR-009**: Using the overlay MUST NOT count as engagement, MUST NOT alter what the feed serves, and MUST NOT affect any state the feed consults.
-- **FR-010**: Whether the overlay may reflect the player's own behaviour back to them: [NEEDS CLARIFICATION: #24 — constitution 2.0.0 rule 4 forbids "any dwell or engagement trace"; does that bind only data that leaves the session, or any measurement of the player?]. Regardless of the answer, nothing the overlay shows or counts may be persisted or transmitted.
+- **FR-010**: The overlay MUST NOT measure the player (decision 0015, #24): nothing about the player's behaviour may be counted, timed or recorded for the overlay's use, and nothing about it may be reflected back to them. The overlay may explain that the feed personalises itself; it MUST NOT show the player what the feed has learned about them. The like's own feedback — the heart, and FR-014's delta — belongs to the like rather than the overlay and is unaffected. Nothing the overlay holds may be persisted or transmitted.
 - **FR-011**: Every explanation MUST describe the mechanism as it is actually implemented, and MUST be checked against the running game by someone other than its author.
 - **FR-012**: Explanations MUST NOT name or identifiably allude to any real platform, company, product, or person (Principle I, decision 0008). The overlay teaches the mechanism, never whose product uses it.
 - **FR-013**: When a catalogued mechanic is not currently active for this player, the overlay MUST NOT present it as though it were.
@@ -161,7 +165,8 @@ Phase 1's post copy was deliberately placeholder and marked as such (spec 001, F
 - **Catalogued mechanic**: One manipulative mechanic the game contains. Carries an identity, a short label, a plain-language explanation of how it works, and one or more anchors. The unit the player learns from.
 - **Anchor**: Where the player encounters a mechanic. One of three kinds — an on-screen element, a trigger with a consequence across later posts, or a deliberate absence. Several mechanics may share one element.
 - **Catalogue**: The single, complete declaration of every catalogued mechanic. Its completeness is the property the phase is built around.
-- **Overlay state**: Whatever the overlay needs to know about its own use in this session. Session-only, never persisted, invisible to the feed. Its exact shape waits on FR-007 and FR-010, and whatever it is gets listed in the progression spec's state vocabulary (FR-022).
+- **Overlay state**: Whether the overlay is open, and which entry is in view. Nothing about the player (FR-010). Session-only, never persisted, invisible to the feed, and listed in the progression spec's state vocabulary (FR-022).
+- **The offer**: A post, served at a fixed point in the feed's sequence. It is content the feed places the same way it places every post, not a piece of state that tracks the player.
 
 ## Success Criteria *(mandatory)*
 
@@ -177,6 +182,7 @@ Phase 1's post copy was deliberately placeholder and marked as such (spec 001, F
 - **SC-008**: Crossing a post boundary costs no more dropped frames with the overlay available than without it, measured with real input under a mid-range-phone processing budget.
 - **SC-009**: A reviewer auditing the overlay against the catalogue's own definitions finds no manipulative mechanic in it.
 - **SC-010**: No post in the feed carries placeholder copy, and a majority of at least five reviewers identify the copy as satire of food content without being told.
+- **SC-011**: The offer appears exactly once per session, at the same point in the feed for every player, whatever they did before reaching it.
 
 ## Assumptions
 
@@ -184,8 +190,8 @@ Phase 1's post copy was deliberately placeholder and marked as such (spec 001, F
 - **`writer` owns every word the player reads in this phase**, in two separately-briefed dispatches: the catalogue's teaching copy, and the satire copy (decision 0010). `docs/tone-and-voice-guide.md` is copied at `writer`'s first dispatch and not before, per the constitution.
 - **`art-director` owns the overlay's visual identity**, including whatever palette amendment FR-020 turns out to need. This specification states what the overlay must not look like; it does not pick its colour.
 - **"Several testers" means at least five.** Spec 001's SC-006 and decision 0014 say "several" without a number, which is not measurable. Five is the conventional floor for a qualitative usability read; this reading is stated here so it can be argued with rather than silently applied.
-- **One playtest session can serve two criteria.** Spec 001's SC-006 (FR-025) and this spec's SC-002 both need unprompted testers who have not seen the build. They may be run as one session with two measurements, provided the SC-006 measurement is taken before any tester is shown the overlay.
-- **Playtest observation is not telemetry.** Watching a tester in a session and recording the result is not the player-measurement question of FR-010, which is about what the *game* counts.
+- **One playtest session can serve two criteria.** Spec 001's SC-006 (FR-025) and this spec's SC-002 both need unprompted testers who have not seen the build. They may be run as one session with two measurements, provided the SC-006 measurement is taken on a feed with neither the overlay control nor the offer. Otherwise it measures a different game from the one spec 001 describes.
+- **Playtest observation is not telemetry.** Watching a tester in a session and recording the result is not what FR-010 forbids. FR-010 is about what the *game* counts.
 - **The escalation curve is phase 3.** Nothing here may pre-empt it (decision 0010 moved it).
 - **The stack is already decided** (decisions 0005, 0012) and is deliberately not restated here — this specification describes what the player experiences, not what builds it.
 
@@ -193,7 +199,7 @@ Phase 1's post copy was deliberately placeholder and marked as such (spec 001, F
 
 | | Blocks | Why |
 |---|---|---|
-| #24 | FR-010, and `clarify` | Whether the overlay may measure the player is the owner's call against a ratified constraint. |
+| ~~#24~~ | — | **Resolved in decision 0015**: the overlay measures nothing. |
 | #22 | the teaching copy for one mechanic | The explanation cannot be written against a name that is wrong at source. |
 | #23 | acceptance of this phase (FR-025) | Not building. The overlay can be built against an unverified pull; it cannot be accepted against one. |
 | #13 | nothing directly | Postponed by the owner until infra exists. FR-018 is the guard that keeps this phase from making it worse. |
@@ -212,6 +218,6 @@ Phase 1's post copy was deliberately placeholder and marked as such (spec 001, F
 
 **1. The catalogue cannot enforce its own central promise by itself.** Decision 0010 says a manipulative mechanic *cannot be added to the game without declaring itself*. The catalogue can guarantee that every entry it holds is complete and still points at something real (FR-005). It **cannot** notice a new manipulative mechanic that nobody declared, because deciding whether something manipulates is judgement, not a check. Stated plainly rather than implied: *cannot be added without declaring itself* is enforced by review, not by construction. FR-026 puts the rule where that review happens. The evidence that review is the weak point is already on record — phase 1 shipped nine undeclared mechanics, and each was built, reviewed and merged without anyone declaring it.
 
-**2. The overlay may defuse what it explains.** If understanding a mechanic weakens its pull, a player who uses the overlay may stop scrolling sooner. That is arguably the thesis working — *showcase the stupidity of social media* — but it means SC-002 (the seam is visible) and spec 001's SC-006 (the pull exists) can trade against each other. The answer to FR-007 decides where on that trade the game sits, which is part of why it is the owner's call and not an implementation detail.
+**2. The overlay may defuse what it explains.** If understanding a mechanic weakens its pull, a player who uses the overlay may stop scrolling sooner. That is arguably the thesis working — *showcase the stupidity of social media* — but it means SC-002 (the seam is visible) and spec 001's SC-006 (the pull exists) can trade against each other. Decision 0015 sets where the game sits on that trade: the overlay is always reachable but offered only once, and only after the pull has caught the player. That was the owner's call and not an implementation detail, because it decides which of the two criteria the game favours.
 
 **3. The overlay may be labelling a loop that does not compel.** Spec 001 was accepted on one playtest by someone who had watched it being built (decision 0014). If strangers do not pass 50 posts, this phase explains a compulsion that is not happening — and a teaching overlay over a boring feed still *looks* like it works. FR-025 makes that the acceptance gate rather than an afterthought.

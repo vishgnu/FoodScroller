@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain — **2 remain, deliberately** (FR-007 invocation model; FR-010 / #24 player measurement). Both are owner calls, not gaps.
+- [x] No [NEEDS CLARIFICATION] markers remain — both resolved by the owner in decision 0015 (FR-007: findable control + one offer, as a post; FR-010: the overlay measures nothing).
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -39,5 +39,7 @@ Iteration 1 failed six items, all fixed in iteration 2:
 4. SC-002 and SC-010 said "a majority" of an unstated number. Now at least five, stated as an assumption so it can be argued with.
 5. Known Design Risk 1 claimed the nine undeclared mechanics were merged "by people who could have named it". Not supported by evidence. Now: merged without anyone declaring it.
 6. FR-026 required a rule "where work is checked" without saying where. Now: the project's standing rules for accepting work.
+
+Iteration 3, after the owner's answers (Q1: C, Q2: B): both markers removed and the answers written into FR-007 and FR-010, not only into the decisions log. That was decision 0009's lesson. The PM had called the pair incompatible, because the offer seemed to need a posts-scrolled count. It did not. The offer is a post at a fixed point in the feed's sequence, placed the way every post is placed, so it measures nothing. Added SC-011, two acceptance scenarios and two edge cases so this stays testable. All items pass.
 
 Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`.
